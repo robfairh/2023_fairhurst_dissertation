@@ -1,0 +1,72 @@
+\label{ap:nuc_heating}
+
+This appendix contains the results for experiments of silicon carbide (SiC) and stainless steel (SS).
+The first problem uses the following parameters:
+\begin{itemize}
+  \item $\rho^\circ_{Si}$ = 2.33 g/cm$^3$, $\rho^\circ_{C}$ = 2.25 g/cm$^3$, $\rho_{SiC}$ = 3.21 g/cm$^3$
+  \item $at_{Si}$ = 0.5, $\rho_{Si}$ = 2.25 g/cm$^3$
+  \item $at_{C}$ = 0.5, $\rho_{C}$ = 0.96 g/cm$^3$.
+\end{itemize}
+
+Table \ref{tab:res-sic} summarizes the results.
+The row $H_{j,Si}$ + $H_{j,C}$ corresponds to adding together $H^\circ_{j,Si}$ and $H^\circ_{j,C}$ after being weighted by the density ratios.
+Although the relative error for $H_{ch}$ is above 5\%, it does not affect the total value, whose relative error is below 2\%.
+The reason for this is that $H_{ch}$ corresponds to less than 1\% of $H_T$.
+
+% Table with SiC results
+\begin{table}[htbp!]
+  \centering
+  \caption{Results for an experiment of SiC in the demonstration problem from Section \ref{sec:4-demo}.}
+  \label{tab:res-sic}
+  \begin{tabular}{cccccc}
+    \toprule
+                              & Units & $H_{ch}$ & $H_{\gamma, Tr}$ & $H_{T}$          \\
+    \midrule
+    $H^\circ_{j,Si}$          & W     & 0.18     & 13.36 $\pm$ 0.33 & 13.55 $\pm$ 0.33 \\
+    $H^\circ_{j,C}$           & W     & 0.00     & 12.67 $\pm$ 0.33 & 12.67 $\pm$ 0.33 \\
+    $H_{j,Si}$ + $H_{j,C}$    & W     & 0.18     & 18.31 $\pm$ 0.46 & 18.49 $\pm$ 0.46 \\
+    $H_{j,SiC}$ (Reference)   & W     & 0.17     & 17.97 $\pm$ 0.39 & 18.14 $\pm$ 0.39 \\
+    Rel. Error                & \%    & 5.88     & 1.89             & 1.93             \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The second problem uses the following parameters:
+\begin{itemize}
+  \item $\rho^\circ_{Fe}$ = 7.87 g/cm$^3$, $\rho^\circ_{Cr}$ = 7.19 g/cm$^3$, $\rho^\circ_{Ni}$ = 8.90 g/cm$^3$, $\rho^\circ_{Mn}$ = 7.26 g/cm$^3$, $\rho^\circ_{Si}$ = 2.33 g/cm$^3$
+  \item $\rho_{SS}$ = 8.03 g/cm$^3$
+  \item $wt_{Fe}$ = 0.68, $\rho_{Fe}$ = 5.46 g/cm$^3$
+  \item $wt_{Cr}$ = 0.18, $\rho_{Cr}$ = 1.44 g/cm$^3$
+  \item $wt_{Ni}$ = 0.11, $\rho_{Ni}$ = 0.88 g/cm$^3$
+  \item $wt_{Mn}$ = 0.02, $\rho_{Mn}$ = 0.16 g/cm$^3$
+  \item $wt_{Si}$ = 0.01, $\rho_{Si}$ = 0.08 g/cm$^3$.
+\end{itemize}
+
+Table \ref{tab:res-ss} summarizes the results.
+The row $H_{j,Fe} + H_{j,Cr} + H_{j,Ni} + H_{j,Mn} + H_{j,Si}$ corresponds to adding together $H^\circ_{j,Fe}$, $H^\circ_{j,Cr}$, $H^\circ_{j,Ni}$, $H^\circ_{j,Mn}$, and $H^\circ_{j,Si}$ after being weighted by the density ratios.
+Focusing on the individual results, manganese has the largest values for the individual materials.
+The contributions of $H_{ch, Mn}$ and $H_{\gamma, Tr, Mn}$ to $H_{T, Mn}$ are 63 and 37\%, respectively.
+Hence, $H_{ch}$ contributes more to the heating than $H_{\gamma, Tr}$ which differs from all previous results.
+Finally, looking at the relative error, the value for $H_{ch}$ is above 40\%, and our method under-predicts this value.
+However, $H_{ch}$ contributes only less than 10\% to $H_T$ and the overal relative error is below 6\%, showing an overall satisfactory performance.
+
+% Table with SS results
+\begin{table}[htbp!]
+  \centering
+  \caption{Results for an experiment of SS in the demonstration problem from Section \ref{sec:4-demo}.}
+  \label{tab:res-ss}
+  \begin{tabular}{cccccc}
+    \toprule
+                                      & Units & $H_{ch}$ & $H_{\gamma, Tr}$ & $H_{T}$          \\
+    \midrule
+    $H^\circ_{j,Fe}$                  & W     & 0.03     & 41.95 $\pm$ 0.61 & 41.98 $\pm$ 0.61 \\
+    $H^\circ_{j,Cr}$                  & W     & 0.20     & 37.83 $\pm$ 0.57 & 38.03 $\pm$ 0.57 \\
+    $H^\circ_{j,Ni}$                  & W     & 0.24     & 48.73 $\pm$ 0.66 & 48.97 $\pm$ 0.66 \\
+    $H^\circ_{j,Mn}$                  & W     & 111.3    & 64.15 $\pm$ 0.59 & 175.45 $\pm$ 0.59 \\
+    $H^\circ_{j,Si}$                  & W     & 0.18     & 13.35 $\pm$ 0.33 & 13.53 $\pm$ 0.33 \\
+    $H_{j,Fe} + H_{j,Cr} + H_{j,Ni} + H_{j,Mn} + H_{j,Si}$   & W     & 2.55     & 43.41 $\pm$ 0.62 & 45.96 $\pm$ 0.62 \\
+    $H_{j,SS}$ (Reference)            & W     & 4.60     & 43.91 $\pm$ 0.61 & 48.51 $\pm$ 0.61 \\
+    Rel. Error                        & \%    & -44.56   & -1.14            & -5.26            \\
+    \bottomrule
+  \end{tabular}
+\end{table}

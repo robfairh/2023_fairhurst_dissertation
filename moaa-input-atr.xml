@@ -1,0 +1,28 @@
+<moaa>
+    <atr>true</atr>
+    <irradiation_cases>
+        <case>
+            <mcnp_input_file>ne71a.i1</mcnp_input_file>
+            <time units="d">3</time>
+            <atr_lobe_powers>
+                <nw>23.0</nw>
+                <ne>20.0</ne>
+                <c>25.0</c>
+                <sw>26.0</sw>
+                <se>26.0</se>
+            </atr_lobe_powers>
+        </case>
+    </irradiation_cases>
+    <decay_times>
+        <time units="s">1</time>
+        <time units="h">12</time>
+    </decay_times>
+    <cells>
+        <cell lobe="ne">501101</cell>
+        <cell lobe="ne">501102</cell>
+        ...
+        <cell lobe="ne">508459</cell>
+        <cell lobe="ne">508460</cell>
+    </cells>
+    <atr_lp_tally_id>7</atr_lp_tally_id>
+</moaa>

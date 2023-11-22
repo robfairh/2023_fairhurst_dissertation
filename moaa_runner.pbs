@@ -1,0 +1,18 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=48:mpiprocs=48
+#PBS -N MOAA_RUN
+#PBS -l walltime=12:00:00
+#PBS -P projectname
+#PBS -v DATAPATH
+
+export DATAPATH=/path/to/mcnp/xs_libraries/
+cat $PBS_NODEFILE
+# Import any modules
+module load mcnp
+module load scale
+# Activate MOAA virtual environment
+source $MOAA-VENV/bin/activate
+#
+cd $PBS_O_WORKDIR
+moaa moaa.xml
+deactivate

@@ -1,0 +1,15 @@
+<moaa>
+    <irradiation_cases>
+        <case>
+            <mcnp_input_file>test1.i</mcnp_input_file>
+            <time>1.0</time>
+            <power>100</power>
+        </case>
+    </irradiation_cases>
+    <decay_times>
+        <time>1</time>
+    </decay_times>
+    <cells>
+        <cell>1</cell>
+    </cells>
+</moaa>

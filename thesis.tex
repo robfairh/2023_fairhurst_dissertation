@@ -1,0 +1,233 @@
+% For copyright and license information, see uiucthesis2021.dtx and derivatives.
+\documentclass{uiucthesis2021}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{microtype}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage[bookmarksdepth=3,linktoc=all,colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage[capitalize]{cleveref}
+\usepackage[style=ieee]{biblatex}
+
+% \usepackage{ruledchapters}  % example of compliant heading format, uncomment to use
+
+\usepackage{lipsum}  % just for placeholder code
+
+% uncomment the below to show a grid on all pages
+% \usepackage[grid, gridunit=in, gridcolor=blue!40, subgridcolor=blue!20]{eso-pic}
+
+\addbibresource{./bibliography.bib}
+\newcounter{counterforappendices}
+
+% Packages added by me
+\usepackage[acronym,toc]{glossaries}
+\include{acros}
+% \makeglossaries
+% \usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{relsize}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{csvsimple}
+\usepackage{longtable}
+
+% \usepackage[printwatermark]{xwatermark}
+% \usepackage{xcolor}
+% \newwatermark[allpages,color=gray!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+
+\begin{document}
+
+\title{Enhanced method for the support of experiment safety analysis}
+\author{Roberto E. Fairhurst-Agosta}
+\department{Nuclear, Plasma, and Radiological Engineering}
+% \concentration{Coffee Studies}
+\phdthesis
+% \prelim
+\degreeyear{2023}
+\committee{
+    Professor Tomasz Kozlowski, Director of Research, Chair\\
+    Professor Rizwan Uddin\\
+    Research Scientist Madicken Munk\\
+    Professor Paul Fischer\\
+    }
+\maketitle
+
+\frontmatter
+
+\begin{abstract}
+
+% Something on Nuclear Research reactors
+Nuclear research reactors enable a wide range of applications and support the development of multiple fields, including energy production, isotopic production, space discovery, among others.
+% Why safety analysis is important
+Research reactor safety analyses demonstrate the contribution of the operational procedures to the prevention of accidents, focusing mainly on the reactor core.
+These analyses rely on the assumption of heat being locally deposited in the core after shutdown.
+This work, however, is concerned with research reactor experiments, and it investigates more detailed methods targeting the specific reactor regions hosting the experiments.
+
+% So far I said that we want more precise calculations
+% % Now reduce time and increase availability
+% The number of research reactors has been decreasing ...
+% % Add image with number of research reactors in the US and the world as well?
+% As the number of research reactors has been decreasing, we also want to increase the reactor availability.
+
+Additionally, research reactor experiments require the development of individual experiment safety analyses, which due to the lack of a streamlined workflow becomes effort and time-consuming as well as error-prone.
+This thesis supports the development of safety analyses for research reactor experiments with the objective of streamlining the calculation procedure as well as accelerating it.
+The methodology presented here calculates the delayed heating in experiments, generates the volumetric heat source term for thermal-fluids calculations, solves the experiment temperature evolution during a channel draining event, and determines if the event leads to a radioactive material release.
+Moreover, this work examines methods to accelerate the calculation, which include the creation of a generic irradiation database and data-based modeling.
+
+This thesis starts with a literature survey summarizing previous work relevant to delayed heating calculations, transport/depletion solvers, and machine learning applied to nuclear engineering.
+The conclusions of the survey guide the choice of methods for the delayed heating calculation and the choice of machine learning algorithms for the data-based modeling.
+
+The following chapters focus on the calculation workflows.
+This thesis establishes a delayed heating calculation workflow based on the formal three-step method that builds on top of the \gls*{MOAA} tool.
+This workflow is verified and demonstrated with several exercises, which also ease the workflow visualization.
+The workflow is also demonstrated in two full-size research reactors, for which the heat in the structures and an experiment are calculated.
+
+A simple modification of the delayed heating calculation workflow generates a shutdown dose rate calculation workflow as a value-added.
+This calculation workflow helps guide the \gls*{PIE} of experiments and helps prevent the unnecessary exposure of personnel and surrounding equipment.
+The calculation workflow is demonstrated for a \gls*{TRISO}-fueled experiment which highlights the applicability of this workflow to more complex geometries, such as \glspl*{HTGR}.
+
+When focusing on the acceleration of the calculations, this thesis proposes the generic irradiation database method.
+This method relies on the delayed heating calculation workflow to obtain the heat produced in experiments of individual chemical elements and through their combination calculate the heat produced in experiments of arbitrary material composition.
+This thesis verifies this method by studying a vast range of materials that could be used in a research reactor experiment.
+
+Moreover, this thesis investigates the applicability of data-based modeling to predict the outcome of the most thermally challenging accident in an experiment, a channel draining event.
+The data preparation process and several machine learning algorithms are described before studying a simplified model.
+This simplified model allows drawing several useful conclusions before scaling it up, with some minor modifications, to a full-size reactor experiment.
+
+Finally, this thesis wraps up with the conclusions from all the previous calculations.
+Overall, the results presented in this thesis meet this thesis' objectives and prove that the proposed methodology decreases the computational expense and enables quick calculations supporting research reactor experiments.
+
+\end{abstract}
+
+\begin{dedication}
+A mi familia, for their unconditional and unwavering support.
+\end{dedication}
+
+\begin{acknowledgments}
+
+% Intro
+Pursuing a Ph.D. is like a roller coaster of emotions through which we build knowledge and advance the state-of-the-art of a certain field.
+% A PhD thesis is not meant to solve all the issues in the field, but to contribute to its advancement.
+I learned a lot during these years, wherein I became a better researcher and gained a deeper understanding of how the academic world works, while I increased my knowledge of this engineering field that I love.
+This Ph.D. thesis is the product of countless cups of coffee and innumerable discussions that can be wrapped up into five and a half years of work, and it would not have been possible without the support of numerous people that I will try to acknowledge here.
+
+% Tomasz
+First and foremost, I would like to thank my Ph.D. advisor Dr. Tomasz Kozlowski for welcoming me into his research group, the Analysis of Reactor Transients and Stability Group (ARTS).
+I have always esteemed Tomasz and his broad and deep expertise in the fundamental physics that defines our field.
+Hopefully, I was able to learn some things from him and the long and fruitful discussions that contributed to my work.
+% Kathryn Huff
+Second, I would like to thank my former advisor Dr. Kathryn Huff for allowing me to be part of the Advanced Reactors and Fuel Cycles Group (ARFC) and for her thorough guidance in my academic beginnings during my early years in graduate school.
+% Committee
+Next, I would like to thank the members of my doctoral committee, Dr. Madicken Munk, Dr. Rizwan Uddin, and Dr. Paul Fischer for the thorough input and guidance they provided in assessing this work.
+I would like to specially thank Madicken and Paul for their kind words, support, and very enlightening questions and remarks during my preliminary examination.
+
+% Internships
+Additionally, part of my learning experience happened during several summer internships at national laboratories.
+I am very grateful I was part of the Irradiation Experiment Neutronics Analysis group at the Idaho National Laboratory for two consecutive summers.
+The seed idea for this work came from discussions with Dr. Joshua Peterson-Droogh, for whom I am very thankful.
+I also would like to acknowledge my internship mentor Austin Carter, from whom I learned a lot about software development and quality assurance.
+And also I would like to acknowledge him as the main developer of the MCNP-ORIGEN Activation Automation tool (MOAA), one of the major components of this work.
+Idaho felt like home thanks to Josh, Austin, and Clinton Wilson, who taught me that there is an important human factor in research.
+During my last summer internship, I was part of the System Analysis and Methods group at the Argonne National Laboratory, where I was working under Dr. Zhiee J. Ooi's mentorship along with Dr. Ling Zhou and Dr. Rui Hu.
+I am very thankful for this opportunity, wherein I was able to collaborate with researchers of their caliber and to learn the true meaning of teamwork.
+
+% Group ARTS, ARFC and Friends in Grad School
+Besides the support from several professors and mentors, this work was possible due to day-to-day motivation from my fellow group-mates Alvin Lee, Silvana Tabares-Burgos, Harun Ardiansyah, and Yifan Mao, also from my former group-mates Sam Dotson, Gwen Chee, and Sun Myung Park, as well as my graduate school friends Jeremy Mettler and Erik Smith.
+% My Family
+I also want to highlight my family: Roberto, Ana, Leo, Vicky, and Euge, who even though are well over five thousand miles apart, their love, support, and encouragement were always present.
+% Nicole
+Finally, I would like to acknowledge Nicole Veit for her support during my last semester of graduate school and for giving me the strength, courage, and motivation necessary to finish this work.
+
+This work was conducted in ARTS group at the Nuclear, Plasma, and Radiological Engineering (NPRE) Department at the \gls*{UIUC}.
+This research made use of the Illinois Campus Cluster, a computing resource that is operated by the Illinois Campus Cluster Program (ICCP) in conjunction with the National Center for Supercomputing Applications (NCSA), which is supported by funds from \gls*{UIUC}.
+This research also made use of the resources of the High Performance Computing Center at the \gls*{INL}, which is supported by the Office of Nuclear Energy of the \gls*{DOE} and the Nuclear Science User Facilities under Contract No. DE-AC07-05ID14517.
+
+\end{acknowledgments}
+
+{
+    \hypersetup{linkcolor=black}  % disable link coloring locally
+    \tableofcontents
+    % the Graduate College doesn't recommend including lot or lof
+    % \listoftables
+    % \listoffigures
+}
+
+% Leave this for the PhD (Maybe)
+% \chapter{List of Abbreviations}
+
+% \begin{abbrevlist}
+% \item[CA] Caffeine Addict.
+% \item[CD] Coffee Drinker.
+% \end{abbrevlist}
+
+% Leave this for the PhD (Maybe)
+% \chapter{List of Symbols}
+
+% \begin{symbollist}[0.7in]
+% \item[$\tau$] Time taken to drink one cup of coffee.
+% \item[$\mu$g] Micrograms (of caffeine, generally).
+% \end{symbollist}
+
+\mainmatter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Introduction}
+\input{introduction}
+
+\chapter{Literature Review}
+\input{litreview}
+
+\chapter{Delayed Heating}
+\input{delayedheat}
+
+\chapter{Shutdown Dose Rate}
+\input{shutdowndose}
+
+\chapter{Generic Irradiation Database}
+\input{irrdatabase}
+
+\chapter{Thermal-Fluids and Machine Learning}
+\input{thermalfluids}
+
+\chapter{Conclusions}
+\input{conclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% per Graduate College preference, place the \appendix and the appendices content before the
+% bibliography (here) only if the appendices contain references.
+\backmatter
+\printbibliography[heading=bibintoc, title={References}]
+
+% the below lines are only needed if bibliography precedes appendices
+% uses https://tex.stackexchange.com/a/440212 to continue page numbering
+\clearpage
+\setcounter{counterforappendices}{\value{page}}
+\mainmatter
+\setcounter{page}{\value{counterforappendices}}
+\appendix
+
+\chapter{MOAA execution}
+\input{appendixA}
+
+\chapter{Execution of Delayed Heating Calculation Workflow}
+\input{appendixB}
+
+\chapter{Serpent Gamma Source}
+\input{appendixA2}
+
+% \chapter{Nuclear heating in material mixes}
+% \input{appendixC}
+
+\chapter{Experiment Material Properties for Neutronics Calculation}
+\input{appendixE}
+
+\chapter{Experiment Material Properties for Thermal-Fluids Model}
+\input{appendixF}
+
+
+\end{document}
