@@ -1,19 +1,19 @@
 \label{ch:sdr}
 
 % Intro
-While previous work utilized MOAA for delayed heating calculations \cite{fairhurst_decay_2022, fairhurst_demonstration_2022, fairhurst_database_2022}, a modification to the calculation workflow allows it to obtain the shutdown-dose rate.
+While previous work utilized MOAA for delayed heating calculations \cite{fairhurst_decay_2022, fairhurst_demonstration_2022, fairhurst_database_2022}, a modification to the calculation workflow allows it to obtain the shutdown dose rate.
 The calculation workflow for the shutdown dose rate and delayed gamma heating is very similar, and they only change in how the deposition of energy manifests, either dose or heat.
 
 % Motivation
 The purpose of this chapter is to demonstrate the shutdown dose rate calculation workflow.
 The development of experiment safety analysis also requires the determination of a \gls*{PIE} strategy, including the estimation of the dose rate in the surroundings of the experiments.
-A capability like this allows to establish a \gls*{PIE} of an experiment from the dose rate standpoint, as well as design optimization.
+A capability like this can establish a \gls*{PIE} of an experiment from the dose rate standpoint and guide the design optimization.
 % 
 The equivalent dose rate from delayed gamma radiation is also an important factor for safely conducting work after reactor shutdown, such as periodic maintenance, fuel shuffling, among others \cite{ho_calculation_2022}.
 
 Motivated by the calculation of shutdown dose rates in experiments, one experiment conducted at \gls*{ATR}, the \gls*{AGR1} \cite{sterbentz_agr1_2018}, requires special attention.
-The \gls*{AGR1} was an experiment fueled with \gls*{TRISO} particles, which is a type of fuel form that is commonly found in \glspl*{HTGR}.
-So, in order to properly model the AGR-1 experiment, it is insightful to understand the calculation workflow for shutdown dose rates in \glspl*{HTGR}.
+The \gls*{AGR1} was an experiment fueled with \gls*{TRISO} particles, which is the type of fuel form that is commonly found in \glspl*{HTGR}.
+To properly model the AGR-1 experiment, it is insightful to understand the calculation workflow for shutdown dose rates in \glspl*{HTGR}.
 
 % Shutdown dose rate in LWRs
 Many publications have studied the shutdown dose rate in \glspl*{LWR}.
@@ -33,7 +33,7 @@ For example, Suwoto et al. \cite{suwoto_neutron_2018} calculated the neutron dos
 % MCNP5
 % 
 Ueta et al. \cite{ueta_shielding_2016} studied the shielding performance for the upper structure of the \gls*{HTTR} during normal operation.
-Their study considered the active core, spent fuel, and equipment installed in the primary circuit as neutron and gamma radiation sources, and concluded that the neutron contribution to the dose was over 90\%.
+Their study considered the active core, spent fuel, and equipment installed in the primary circuit as neutron and gamma radiation sources and it concluded that the neutron contribution to the dose was over 90\%.
 % The spent fuel source was evaluated with ORIGEN2.
 % 
 Another study by Hamzah et al. \cite{hamzah_preliminary_2019} analyzed the dose rate distribution in the Reaktor Daya Eksperimental (RDE), a 10 MWth experimental pebble-bed reactor, during normal operation and after shutdown.
@@ -54,7 +54,7 @@ Most of the studies described above focus on the dose rates during normal operat
 % % Most of the studies focus mainly on the dose rates during normal operation or perform some sort of homogenization, neglecting the double heterogeneity of the fuel.
 
 The objective of this work is to introduce a new shutdown dose rate calculation capability for TRISO-fueled experiments and HTGRs.
-The modeling of HTGRs is challenging due to the fuel double heterogeneity, a distinctive characteristic in this type of reactor due to its fuel nature - i.e., the \gls*{TRISO} particles.
+The modeling of HTGRs is challenging due to the fuel double heterogeneity, which is a distinctive characteristic in this type of reactor due to its fuel nature - i.e., the \gls*{TRISO} particles.
 Previous work \cite{fairhurst_decay_2022, fairhurst_demonstration_2022, fairhurst_database_2022} utilized MOAA to calculate delayed heating by treating each depleted cell as an independent source of radiation.
 However, one single HTGR core contains millions of TRISO particles, meaning that modeling each cell independently is not realistically possible.
 This chapter of the thesis investigates the modeling of the AGR-1 experiment using the repeated structures from MCNP to explicitly model the TRISO particles as decay radiation source.
@@ -62,7 +62,7 @@ This chapter of the thesis investigates the modeling of the AGR-1 experiment usi
 This chapter is organized as follows.
 Section \ref{sec:methodology} details the main aspects of the calculation workflow.
 Section \ref{sec:verif} introduces a verification exercise consisting of the delayed heating calculation of a simple geometry.
-Section \ref{sec:agr} discusses an exercise studying the shutdown-dose rates of the \gls*{AGR1} experiment.
+Section \ref{sec:agr} discusses an exercise studying the shutdown dose rates of the \gls*{AGR1} experiment.
 % \cite{fairhurst_sdr_2023}
 Additionally, Section \ref{sec:micro} uses the workflow described here to study potential decommissioning strategies of a high-temperature gas-cooled microreactor.
 
@@ -79,26 +79,27 @@ The calculations use the formal 3-step process to obtain the shutdown dose rates
 \end{itemize}
 
 % Workflow
-As we can see, the calculation workflow for the shutdown dose rate and delayed gamma heating (Sec. \ref{sec:delheat}) is identical, and the only change is the evaluation of energy deposition resulting from the photon transport.
-Overall, the calculation scheme, shown in Figure \ref{fig:workflow_4}, follows the formal 3-step process, in which MOAA conducts the first two steps, and an MCNP photon-transport simulation carries out the third step and estimates the dose rate with the following formula
+As described here, the calculation workflow for the shutdown dose rate and delayed gamma heating (Section \ref{sec:delheat}) is identical, and the only change is the evaluation of energy deposition resulting from the photon transport.
+Overall, the calculation workflow, shown in Figure \ref{fig:workflow_4}, follows the formal 3-step process, in which MOAA conducts the first two steps, and an MCNP photon-transport simulation carries out the third step and estimates the dose rate with the following formula
 % Photons deposit their energy globally thus requiring a transport simulation \cite{peterson-droogh_current_2018}.
 
 % Formulas
 % 1.6022 \times 10^{-19} \times 3600
 \begin{align}
-\dot{D}[Sv/h] &=  F4\!:\!p [pSv/src] \times \mathlarger{\sum}_i S_i \times 3.6 \times 10^{-9} \label{eq-dose} \\
+\dot{D}[Sv/h] &=  FT\!\!:\!p \; [pSv/src] \times \mathlarger{\sum}_i S_i \times 3.6 \times 10^{-9} \label{eq-dose} \\
 S_i[\gamma/s] &= \int_{E} \varphi^\gamma_i(E) dE \\
 s_i [-] &= S_i / \mathlarger{\sum}_j S_j
 \end{align}
-where $\dot{D}$ is the dose rate, $F4\!\!:\!\!p$ is the F4 tally for photons, $S_i$ is the total photon emission rate from region $i$, $\varphi^\gamma_i(E)$ is the photon source energy distribution from region $i$, and $s_i$ is the source emission probability of region $i$.
-$F4\!\!:\!\!p$ result is expressed in $pSV$ per source particle by adding fluence-to-dose conversion factors \cite{icrp_116} to the MCNP input file.
+where $\dot{D}$ is the dose rate, $FT\!\!:\!p$ is the track length estimate of the cell flux for photons, $S_i$ is the total photon emission rate from region $i$, $\varphi^\gamma_i(E)$ is the photon source energy distribution from region $i$, and $s_i$ is the source emission probability of region $i$.
+In this work, $FT$ corresponds to the $F4$ tally in MCNP.
+$FT\!\!:\!p$ result is expressed in $pSV$ per source particle by adding fluence-to-dose conversion factors \cite{icrp_116} to the MCNP input file.
 The conversion factors consider an antero-posterior exposure to photons.
 
 \begin{figure}[htbp!]
   \begin{center}
     \includegraphics[width=0.85\linewidth]{figures/dose-flow}
   \end{center}
-  \caption{Shutdown dose rate calculation scheme.}
+  \caption{Shutdown dose rate calculation workflow.}
   \label{fig:workflow_4}
 \end{figure}
 
@@ -107,7 +108,7 @@ The conversion factors consider an antero-posterior exposure to photons.
 \label{sec:verif}
 
 % Intro
-This exercise consists of the delayed gamma heating calculation in a simple geometry.
+This exercise calculates the delayed gamma heating in a simple geometry.
 The calculation workflow for the shutdown dose rate and delayed gamma heating is identical, and they only change in how the deposition of energy manifests, either dose or heat.
 Three calculations were performed for this exercise.
 The first calculation employs the explicit independent definition of each cell and provides the reference values.
@@ -115,9 +116,10 @@ The second calculation utilizes the repeated structures' approach.
 
 The following equation calculates the delayed gamma heating
 \begin{align}
-H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \: ^* \! F8 [MeV] \times \mathlarger{\sum}_i S_i
+H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times EDT \; [MeV] \times \mathlarger{\sum}_i S_i
 \end{align}
-where $H_{\gamma, Tr}$ is the energy deposited in the region of interest resulting from the photon transport, $^\ast F8$ is the energy deposition calculated by an $^\ast$F8 tally, and $S_i$ is the total photon emission rate from the region $i$ (see Eq. \ref{eq-ga-tr}).
+where $H_{\gamma, Tr}$ is the energy deposited in the region of interest resulting from the photon transport, $EDT$ is the energy deposition tally, and $S_i$ is the total photon emission rate from the region $i$ (specified by Equation \ref{eq-ga-tr}).
+In this work, $EDT$ corresponds to the $^\ast$F8 tally in MCNP.
 
 % OLD RESULTS
 % % Problem definition
@@ -189,7 +191,7 @@ where $H_{\gamma, Tr}$ is the energy deposited in the region of interest resulti
 
 % % Conclusions from 13-
 % This exercise studied the delayed heating calculation in repeated structures, such as the ones that are necessary to define HTGR models.
-% Taking advantage of the MCNP input definition using repeated structures allows for simplifying the definition of cells contributing to the delayed heating/shutdown dose rates.
+% Taking advantage of the MCNP input definition using repeated structures simplifies the definition of cells contributing to the delayed heating/shutdown dose rates.
 % Even though the results for the repeated structures' case show an overestimation of the delayed heating, the approach seems to yield a reasonable approximation.
 % The results and conclusions drawn from this exercise set the path forward for the next exercises, which use the same approach for calculating the shutdown dose rate in HTGRs.
 
@@ -201,18 +203,18 @@ The shell dimensions are an inner side length of 32 cm and 2 cm thickness.
 The reflector tank is filled with light water, and its radius is 40 cm.
 The whole geometry is 80 cm high.
 The fuel is 7.8\%-enriched uranium with a density of 10.5 g/cm$^3$, the inner shell is made of pure aluminum with a density of 2.7 g/cm$^3$, and the water has a density of 1.0 g/cm$^3$.
+% The Problem
+The main objective of the calculation is the estimation of the delayed gamma heating in the core inner shell, considering all the fuel pins as the radiation source.
+The delayed heating is calculated after a reactor operation at a 1 MW constant power for a 12 month cycle.
 
 \begin{figure}[htbp!] %or H 
     \centering
     \includegraphics[width=0.6\linewidth]{figures/toy-problem-b.png}
     \hfill
-    \caption{Verification problem geometry. The delayed gamma heating is calculated in the core inner shell.}
+    \caption{Verification problem geometry.}
     \label{fig:toy-geo2}
 \end{figure}
 
-% The Problem
-The main objective of the calculation is the estimation of the delayed gamma heating in the core inner shell, considering all the fuel pins as the radiation source.
-The delayed heating is calculated after a reactor operation at a 1 MW constant power for a 12-month cycle.
 
 % Results
 Table \ref{table:verif} summarizes the main results at the end of irradiation.
@@ -255,7 +257,7 @@ As these pins contribute the most to the heating of the shell due to their proxi
 
 \begin{figure}[htbp!] %or H 
     \centering
-    \includegraphics[width=0.65\linewidth]{figures/moaa-ref-uni-gamma-intens-b}
+    \includegraphics[width=0.75\linewidth]{figures/moaa-ref-uni-gamma-intens-b}
     \hfill
     \caption{Comparison of the intensity of the gamma sources in the fuel pins. The top value corresponds to the repeated structure approach. The intermediate value corresponds to the reference values. Intensities expressed in decays per second. The lower value corresponds to the relative difference in \%.}
     \label{fig:gamma-sources}
@@ -263,8 +265,8 @@ As these pins contribute the most to the heating of the shell due to their proxi
 
 As shown in Figure \ref{fig:gamma-sources}, the accuracy of the repeated structure approach is affected when the problem shows a strong spatial effect.
 This suggests that using a repeated structure that comprehends the whole core is not the right approach.
-Instead, a better approach would consider the flux shape variation to choose the repeated structures.
-This exercise was also conducted using repeated structures but arranging the fuel pins in groups of 4.
+Instead, a better approach is to consider the flux shape distribution when choosing the repeated structures.
+Hence, this exercise was also conducted using repeated structures but arranging the fuel pins in groups of four.
 Table \ref{table:verif2} displays the results for that case.
 The relative difference for the delayed gamma heating is 4.3\%, while the rest of the results do not change considerably.
 The results show that grouping the structures based on the location, and hence similar flux levels, yields better results.
@@ -288,7 +290,7 @@ The results show that grouping the structures based on the location, and hence s
 This exercise studied the delayed heating calculation in repeated structures, such as the ones that are necessary to define HTGR models.
 Taking advantage of the MCNP input definition using repeated structures allows for simplifying the definition of cells contributing to the delayed heating/shutdown dose rates.
 Even though the results for the repeated structures' case show an overestimation of the delayed heating, the approach yields a reasonable approximation when considering the flux spatial variation.
-The results and conclusions drawn from this exercise set the path forward for the next exercises, which use the same approach for calculating the shutdown dose rate in HTGRs.
+The results and conclusions drawn from this exercise set the path forward for the next exercises, which use the same approach for calculating the shutdown dose rate in TRISO-fueled exercises.
 
 
 \section{AGR-1}
@@ -297,9 +299,7 @@ The results and conclusions drawn from this exercise set the path forward for th
 % Depletion results: AGR1 benchmark
 
 % AGR-1
-The \gls*{AGR1} \cite{sterbentz_agr1_2018} was a TRISO-particle irradiation test in the \gls*{ATR}, a 250-MWth high flux test reactor located at the Reactor Technology Complex of the \gls*{INL}.
-This experiment was part of the \gls*{DOE} Advanced Gas Reactor Fuel Development and Qualification Program to support the \gls*{NGNP} program.
-
+The \gls*{AGR1} \cite{sterbentz_agr1_2018} was a TRISO-particle irradiation test in the \gls*{ATR}, and it was part of the \gls*{DOE} Advanced Gas Reactor Fuel Development and Qualification Program to support the \gls*{NGNP} program.
 % ATR: reactor description
 Figure \ref{fig:atrq} shows the MCNP quarter model of ATR, which represents the core east quadrant, which is used for the simulations.
 This model simplifies the reactor geometry by grouping the fuel plates into three radial zones.
@@ -320,7 +320,7 @@ The AGR-1 Depletion Benchmark \cite{sterbentz_agr1_2018} describes the experimen
 The test train consists of six cylindrical capsules vertically stacked, wherein the compacts are separated into three columns, with each column containing four compacts, adding up to a total of 72 compacts.
 The experiment includes four different types of compact.
 Capsules 3 and 6 contain the baseline compact, capsule 5 contains variant 1, capsule 2 contains variant 2, and capsules 1 and 4 contain variant 3.
-The difference between compact types is that the particle layers change slightly in thickness and density, while the fuel kernel remains the same.
+The difference between compact types is the thickness and density of the particle layers, while the fuel kernel remains the same.
 Additionally, each type of compact has a different number of embedded particles.
 The main model simplifications are that the hafnium (Hf) shroud surrounds the whole circumference of the capsule, the gas lines, thermocouples, and thru-tubes are neglected, and the TRISO particles are arranged in a regular lattice.
 
@@ -362,7 +362,7 @@ The benchmark data includes for each time step: the lobe power, the OSCC positio
 Figure \ref{fig:agr-data} shows the benchmark data for the first irradiation cycle or cycle 138B.
 Because the data includes 662 time steps, and to reduce the complexity of the model, this work considers the power, OSCC position, and neck shim insertion condition to take the cycle average value.
 For the neck shim insertion, the average value is considered the cycle predominant insertion condition.
-For example, if the NE 1 rod is inserted through most of the cycle, this work assumes that it is inserted throughout the whole cycle length.
+For example, if the NE 1 rod is inserted throughout most of the cycle, this work assumes that it is inserted throughout the whole cycle length.
 For tally normalization, the B-10 position tally data is typically normalized to an east lobe power defined as the average of the northeast, center, and southeast lobe powers.
 For the fuel composition, the MCNP model defines the driver fuel for the \gls*{BOC} 145A and assumes it to be appropriate for the \gls*{BOC} of all the cycles.
 This work takes that assumption one step further and considers the driver fuel composition to remain constant during all the simulations.
@@ -407,7 +407,7 @@ Finally, this work predicts a lower burnup than the benchmark results.
 The reason for this is the modeling simplification of considering the average values for each cycle, and most importantly, utilizing the cycle average power.
 Although not shown here, some cycles include a reactor shutdown, in which the reactor total power becomes zero (even for 40 days).
 For these cycles, the average cycle values simplification is expected to underpredict the cycle burnup.
-For future reference, this simplification should not be used when trying to follow the benchmark formally.
+For future reference, this simplification should not be used when trying to formally follow the benchmark.
 However, for the purpose of this work focusing on shutdown dose rates, this simplification and consistent results are deemed valid. 
 
 \begin{figure}[htbp!] %or H 
@@ -482,7 +482,7 @@ The total source intensities decrease two orders of magnitude after a 365-day de
 Table \ref{table:agr-dose} shows the dose rate at different distances from the center of the AGR test train by decay time.
 % Discussion
 The results show that even after one year decay, and at 98 cm distance from the experiment, the exposure from the experiment decay is high.
-For that reason, the experiment \gls*{PIE} would need to await more than 1 year to be conducted or utilize a hot cell with the appropriate shielding to prevent any unnecessary exposure of the personnel.
+For that reason, the experiment \gls*{PIE} has to await more than 1 year to be conducted or utilize a hot cell with the appropriate shielding to prevent any unnecessary exposure of the personnel.
 
 \begin{table}[!htb]
   \centering
@@ -526,7 +526,7 @@ After reactor shutdown, the ongoing decay may inflict dose on workers and equipm
 In \glspl*{LWR}, the common strategy entails flooding the entire reactor cavity to remove the spent fuel, as the water column between the assemblies and the operators provides enough shielding.
 % High-temperature graphite oxidation
 HTGRs cannot, however, implement such a strategy because of the presence of large volumes of high-temperature graphite in the core, and this could lead to graphite oxidation \cite{oxidation}, degrading its structural and functional properties.
-Nevertheless, the proper characterization of the shutdown dose rates can guide establishing a suitable decommissioning strategy.
+Nevertheless, the proper characterization of the shutdown dose rates can guide the establishment of a suitable decommissioning strategy.
 
 % % More motivation
 % Furthermore, some of the microreactor designs envision core lifetimes of more than 10 years, which will allow their continuous operation without refueling outages \cite{usnc_mmr}.
@@ -544,9 +544,9 @@ Nevertheless, the proper characterization of the shutdown dose rates can guide e
 This exercise uses the shutdown dose rate calculation workflow described above to study a decommissioning strategy for a model based on an early version of the \gls*{USNC} \gls*{MMR} design \cite{uiuc-mmr2}, hereby referred to as $\mu$HTGR \cite{fairhurst_sdr_2023}.
 Because most of the technical details of the MMR are not public, the $\mu$HTGR model is based on the publicly available information of the reactor \cite{uiuc-mmr2, usnc_mmr, chalk_mmr, neup_mmr}.
 
-The decommissioning strategy places the reactor in a safe shutdown state and allows it to cool down for three months \cite{usnc_mmr}.
-The plan continues with the removal of the reactor lid at the citadel floor, control rod driving mechanisms, \gls*{RPV} lid, and upper core restraint structures to allow for the fuel assembly unloading before removing the vessel itself.
-This exercise intends to quantify the dose rate that a worker would experience if standing at ground level on the citadel floor above the reactor top while the reactor core is exposed.
+The decommissioning sequence considers that the reactor operates at a full power of 15 MWth for 20 years before placing it in a safe shutdown state and allows it to cool down for three months \cite{usnc_mmr}.
+The sequence continues with the removal of the reactor lid at the citadel floor, control rod driving mechanisms, \gls*{RPV} lid, and upper core restraint structures to allow for the reactor core unloading before removing the vessel itself.
+This exercise intends to quantify the dose rate that a worker experiences when standing at ground level on the citadel floor above the reactor top while the reactor core is exposed.
 
 % Problem definition
 Figure \ref{fig:model-1} displays the $\mu$HTGR core layout.
@@ -594,8 +594,8 @@ Table \ref{table:description} summarizes the characteristics of the TRISO partic
 % SDR calculations
 Figure \ref{fig:model-2} displays the side view of the MCNP model.
 In the radial direction, the model neglects the presence of the RPV side wall and considers the reactor to be in a cavity of Portland concrete (2.3 g/cm$^3$ density).
-The concrete wall is located 191 cm away from the radial reflector and has a 100 cm-thickness.
-In the axial direction, the cavity is limited by the citadel floor of Portland concrete with a 70 cm-thickness.
+The concrete wall is located 191 cm away from the radial reflector and has a 100 cm thickness.
+In the axial direction, the cavity is limited by the citadel floor of Portland concrete with a 70 cm thickness.
 The distance from the top of the reactor to the citadel floor (ground level) is 700 cm.
 The remaining volumes are filled with air (80 vol\% nitrogen, 20 vol\% oxygen).
 
@@ -635,7 +635,7 @@ However, for the purposes of this discussion, the assumptions considered yield a
 \end{figure}
 
 % heterogenous model results
-Figure \ref{fig:res-2} shows the dose rate map at the citadel after a 3-month cool-down.
+Figure \ref{fig:res-2} shows the dose rate map at the citadel after a 3 month cool-down.
 The region directly above the reactor core shows the largest values, some of them being above 40 mSv/h.
 The dose rate in the standard person is 6.48 +/- 1.04 mSv/h.
 
@@ -643,7 +643,7 @@ The dose rate in the standard person is 6.48 +/- 1.04 mSv/h.
   \begin{center}
     \includegraphics[width=0.60\linewidth]{figures/meshtal4}
   \end{center}
-  \caption{Dose rate map at the citadel after 3 month-cool-down.}
+  \caption{Dose rate map at the citadel after 3 month cool-down.}
   \label{fig:res-2}
 \end{figure}
 
@@ -651,21 +651,21 @@ The dose rate in the standard person is 6.48 +/- 1.04 mSv/h.
 % Title 10, Part 20, of the Code of Federal Regulations (10 CFR Part 20) "Standards for Protection against Radiation".
 % https://www.nrc.gov/about-nrc/radiation/health-effects/info.html#dose
 The annual total effective dose equivalent for the whole body is 50 mSv for radiation workers.
-Although the calculated dose rate is below this limit, other considerations need to be considered, such as exposure time and worker's distance.
-These working conditions would allow a radiation worker to perform their tasks for less than 8 hours per year.
+Although the calculated dose rate is below this limit, other aspects need to be considered, such as exposure time and worker's distance.
+These working conditions allow a radiation worker to perform their tasks for less than 8 hours per year.
 Additionally, the calculations consider a vertical distance of 7 m between the top of the core and the worker.
 However, while the assemblies are being removed, such a distance will be considerably smaller, and the dose rate will increase accordingly.
 For this reason, other decommissioning strategies should be considered to minimize unnecessary exposure.
 % Conclusions 10-
-Future work should analyze those strategies, adding shielding to the reactor core/assemblies and allowing for a longer cool-down time.
+Those strategies should consider adding shielding to the reactor core or assemblies and allowing for a longer cool-down time.
 
 
 \section{Conclusions}
 \label{sec:conclusion}
 
 % Intro
-This chapter focuses on the shutdown-dose rate calculations, which are necessary for the determination of suitable \gls*{PIE} strategies for experiment irradiation.
-Benefiting from similar workflows, a minimal modification of the workflow allows to obtain both delayed heating and shutdown dose rate.
+This chapter focuses on the shutdown dose rate calculations, which are necessary for the determination of suitable \gls*{PIE} strategies for experiment irradiation.
+Benefiting from similar workflows, a minimal modification of the delayed heating calculation worklfow allows it to calculate both delayed heating and shutdown dose rate.
 
 Motivated by the calculation of shutdown dose rates in experiments, the \gls*{AGR1} experiment sets the path forward for the application of this workflow to \glspl*{HTGR}.
 To properly model the AGR-1 experiment, it is insightful to understand the calculation workflow for HTGRs.
@@ -673,11 +673,11 @@ To properly model the AGR-1 experiment, it is insightful to understand the calcu
 Additionally, as \gls*{HTGR} technology has distinct features from \glspl*{LWR}, their decommissioning requires new strategies that can be guided by the shutdown dose rate calculations.
 
 % 13- Background
-The current available literature on dose rate calculations of HTGRs is scarce, and it focuses on the normal operation regime.
+The current literature on dose rate calculations of HTGRs is scarce, and it focuses on the normal operation regime.
 Additionally, previous work on shutdown dose rates of HTGRs lacks the definition of a formal methodology that considers the double heterogeneity of the TRISO fuel.
 This thesis introduces a new shutdown dose rate calculation capability for HTGRs that relies on MOAA and the MCNP repeated structures to explicitly model the decay radiation emitted from the TRISO particles.
 % 13 - Method
-MOAA is responsible for conducting the first two steps of the process, while the third step is conducted by an MCNP photon transport simulation.
+MOAA is responsible for conducting the first two steps of the process, while the third step is conducted by an MCNP photon-transport simulation.
 
 % 13- Results
 This work introduces a simple exercise to verify the workflow.
@@ -691,5 +691,5 @@ These exercises calculate the shutdown dose rate of the AGR-1 TRISO-fueled exper
 For the AGR-1 experiment, the results showed that the largest contributor to the dose is the fuel for most decay times.
 However, for different decay times, some of the structures produce comparable intensities to the fuel, such as the Hf shroud and the stainless steel structures.
 Additionally, the results lead to the recommendation of allowing a decay time of more than one year and the addition of appropriate shielding for conducting the PIE.
-For the $\mu$HTGR, the results showed that the proposed decommissioning strategy is feasible but not ideal, as it would lead to very high exposures.
-Hence, these results open the door for future studies, which consider the addition of shielding to the reactor core/assemblies and allowing for a longer cool-down time.
+For the $\mu$HTGR, the results showed that the proposed decommissioning strategy is feasible but not ideal, as it leads to very high exposures.
+Hence, these results open the door for future studies, which should consider the addition of shielding to the reactor core or assemblies and allowing for a longer cool-down time.

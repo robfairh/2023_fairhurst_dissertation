@@ -1,79 +1,19 @@
-Intro:
-thermal-fluids model everywhere, only mention CFD in the thermal-fluids objective
+# My Reviews
 
-
-% From MCNP manual (3.3.1.5 Repeated structures)
-
-The primary goal of the repeated-structures capability is to make it possible to describe only once
-the cells and surfaces of any structure that appears more than once in a geometry. Obvious
-examples of geometry models constructed from repeated structures include a reactor core with
-dozens of nearly identical fuel modules or a room containing complicated, nearly identical objects
-arranged in an irregular order. Although the repeated-structures feature reduces input and
-memory use, problems will not run any faster than with any other description. Examples of the
-use of repeated structures cards appear in Section 4.1.3.
-
-
-To add in lit review:
-
-Another method using tabulated values to calculate the release rate and energy spectrum of gamma rays from spent fuel.
-They calculated the gamma-ray dose rate around a PWR spent-fuel assembly using MCNP.
-
-Using a homogenized model of the assembly causes the overestimation of the dose rates close to the assembly surface.
-
-@article{doi:10.13182/NT77-A35393,
-    author = {Ahmet Bozkurt and Nicholas Tsoulfanidis},
-    title = {Modeling Gamma-Ray Dose Rate from a Spent Pressurized Water Reactor Fuel Assembly},
-    journal = {Nuclear Technology},
-    volume = {119},
-    number = {1},
-    pages = {38-47},
-    year  = {1997},
-    publisher = {Taylor & Francis},
-    doi = {10.13182/NT77-A35393},
-    URL = {https://doi.org/10.13182/NT77-A35393},
-    eprint = {https://doi.org/10.13182/NT77-A35393}
-}
-
-
-Neutronics:
-why to study UN https://www.nrc.gov/reactors/power/atf/longer-term.html
-
-why to study SiC https://www.nrc.gov/reactors/power/atf/longer-term.html
-
-
-min(rho_i) < rho_mix < max(rho_i)
-
-
-In method:
-
-The formal 3-step process consists of the following steps:
-\begin{itemize}
-  \item First, a neutron transport calculation determines the neutron flux spatial and energy distribution during reactor operation.
-  \item Second, an activation calculation estimates the energy distribution and emission probability of the photon decays after reactor shutdown.
-  \item Third, a photon-transport calculation evaluates the delayed gamma heating.
-\end{itemize}
-
-The first two steps in the formal 3-step process are accomplished coupling a transport and a depletion solvers.
-Depletion solvers ignore the geometry of the system which signals the need for a transport solver.
-The transport solver generates geometry- and material-dependent parameters that the depletion solver relies on.
-The depletion solver then calculates the resulting material compositions and return this information to the transport solver and a cyclical transfer of information occurs.
-The calculation workflow presented here relies on the MCNP-ORIGEN Activation Automation (MOAA) tool.
-
-
-Ch where I talk about machine learning
-Should results from prelim
-THen based on this results the prefferred methods are: ...
-For the full size ATR experiment we will use those.
-
-Maybe for neutronics I should do a similar thing.
-Fast calculation method  vs  database method for CASE2 --> then database method is superior and I use it for ATR.
-
-
-# Review
-
-* nuclear heating vs delayed heating
+* Present vs Past tense
 * gamma vs photon
+  * use gamma everywhere but in the bremstrahlung discussion
 
+
+* irradiation database: generic material irradiation database
+
+
+## Madicken
+
+* How are you calculating the heat-transfer related material properties of the sample? I didn't see an equation (but perhaps I missed it). I understand how mixed material densities can be calculated based on mass-weighted sums. I also understand how that's possible for activation (for non-thick materials). But is that possible to do for heat transfer properties?? I know that strength properties are extremely dependent on the crystal structure and phase of a material -- so steels can have vastly different strength properties depending on their phase even if their alloys are different ratios of the same elements. I think the mass-weighting probably wouldn't work, then, for those properties. But are heat transfer properties like melting point, thermal conductivity, and heat capacity validly calculated this way?
+
+The inputs are the experiment thermal properties and the coefficients defining the delayed heating in the experiment.
+While the experiment thermal properties are supplied by the user, the delayed heating coefficients are calculated based on the experiment material composition.
 
 
 # README by me
@@ -91,21 +31,7 @@ sudo apt install biber
 * Some modifications:
   * It seems like the graduate college likes only chapters in the table of contents
   * I don't like it, so I modified `tocdepth` in `uiucthesis2021.cls`, `.dtx`, and `.sty`.
-
-
-# Improvements:
-
-Introduction:
-* Add nuclear research reactor history (very first paragraph)
-* Add nuclear research reactor applications (very first paragraph)
-
-Lit. Review:
-* Add applications of nuclear heating capabilities for the design of nuclear facilites (section 2.1 second paragraph)
-
-Methodology:
-* MOAA:
-  * explain what information COUPLE requires: spectrum, parents, childs, cross-section
-  * units include: WATTS, GAMMWATTS, GSPECTRUM
+  * from \usepackage[style=ieee]{biblatex} to \usepackage[style=ieee, dashed=false]{biblatex}. Otherwise, ieee style uses a dash to hide the name of authors if consecutive references have the same authors.
 
 
 # Original README

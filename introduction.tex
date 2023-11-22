@@ -15,7 +15,7 @@ Smaller sizes and power ratings make them less complex with simpler systems and 
 Research reactors enable a vast range of uses and purposes, including scientific research, material testing, and radioactive material production.
 % scientific research
 An example of scientific research is the utilization of thermal and cold neutron facilities, as in the Argentinian reactor RA-10 shown in Figure \ref{fig:intro-1}, to study the structure of matter via neutron scattering.
-Knowing the internal structure of matter allows to understand the macroscopic properties of a material.
+Knowing the internal structure of matter helps understand the macroscopic properties of materials.
 By performing neutron scattering, biologists understand the repair and decay processes in the bones, physicists create more powerful magnets, and neuron experts study proteins in the brain, just to mention a few areas of research \cite{iaea-research}.
 
 \begin{figure}[htbp!] % or H
@@ -37,7 +37,7 @@ By performing neutron scattering, biologists understand the repair and decay pro
 \end{figure}
 
 % material testing
-Material characterization and testing allows to study the effects of radiation on the material properties.
+Material characterization and testing is a technique to study the effects of radiation on the material properties.
 Neutrons induce changes in the materials' structure, making them fragile, elastic or hardened, swell, crumble, change their composition, release gas, etc.
 Moreover, research reactors test advanced reactor fuel which supports their design optimization.
 The \gls*{AGR1} experiment \cite{sterbentz_agr1_2018}, shown in Figure \ref{fig:intro-1}, was an irradiation test to provide performance data during normal operation of the fuel utilized in \glspl*{HTGR}.
@@ -102,8 +102,7 @@ The development of experiment safety analyses is paramount to ensure safe experi
 Accordingly, the \gls*{IAEA} recommends that experiment safety analyses include a list of possible hazards and any operational limits, such as maximum temperatures and pressures \cite{noauthor_safety_2012}.
 
 % The problem
-Research reactors enable the irradiation of a wide variety of experiments.
-For example, they may have different combinations of shapes and materials.
+Research reactors enable the irradiation of a wide variety of experiments, which may have different combinations of shapes and materials.
 Therefore, experiments tend to be unique, requiring independent calculations and the development of safety analyses on a case-by-case basis.
 In consequence, the development of individual analyses often tends to be effort- and time-consuming.
 % Also need for a unified workflow --> otherwise it is error prone
@@ -118,9 +117,9 @@ The present work supports the development of experiment safety analysis, and, to
 The section on the left of Figure \ref{fig:diagra1} shows the standard workflow for the evaluation of the experiment state during the bounding event.
 The workflow consists of a delayed heating calculation and the \gls*{CFD} modeling of the experiment.
 The delayed heating calculation relies on a three-step process.
-First, a neutron transport simulation determines the flux distribution.
+First, a neutron-transport simulation determines the flux distribution.
 Second, a depletion simulation determines the material composition, decay rates, and photon energy distribution.
-Third, a photon transport simulation estimates the energy deposition in the experiment.
+Third, a photon-transport simulation estimates the energy deposition in the experiment.
 The subsequent run and exchange of information between these steps and the CFD simulation is commonly carried out manually by the lack of a streamlined workflow.
 In consequence, the development of experiment safety analyses tends to not only be effort- and time-consuming, but also error-prone, as each of these steps introduces an instance for an error to occur.
 
@@ -159,35 +158,35 @@ Quantifying the capsule cooling requirements, and hence ensuring the capsule's i
 % Decay heat calculation
 \textbf{Develop delayed heating calculation capabilities.}
 In an operating reactor, there is an equilibrium between the generated and removed heat.
-After a reactor shutdown, the radioactive materials continue to decay and release energy.
+After reactor shutdown, the radioactive materials continue to decay and release energy.
 This energy is deposited across the reactor, and it is the cause of the delayed heating.
 The assessment of the energy deposited in the experiment provides the thermal-fluids model with the volumetric heat source to accurately calculate the capsule temperature.
-The delayed heating calculation workflow not only allows calculating the heating in the reactor experiments but also in reactor structures, a new feature that will be demonstrated.
+The delayed heating calculation workflow can not only calculate the heating in the reactor experiments but also in reactor structures, which is a feature that will be demonstrated.
 
 % Shutdown dose rate calculation
-\textbf{Shutdown-dose rate calculations.}
+\textbf{Shutdown dose rate calculations.}
 After the experiment has been extracted from the reactor, the ongoing decay exposes workers and equipment in the surroundings to radiation dose.
 Safety analyses require the quantification of this dose.
-A value-added of the delayed heating calculation is the shutdown-dose rate, which removes the need for additional workflow for radiation dose rates and will be demonstrated for the post-irradiation examination of an experiment.
-% The calculation of the shutdown-dose rate will be demonstrated for the post-irradiation examination of AGR-1, a TRISO-fueled experiment in ATR.
+A value-added of the delayed heating calculation is the shutdown dose rate, which removes the need for additional workflow for radiation dose rates and will be demonstrated for the post-irradiation examination of an experiment.
+% The calculation of the shutdown dose rate will be demonstrated for the post-irradiation examination of AGR-1, a TRISO-fueled experiment in ATR.
 
 The workflow described above streamlines the calculation procedure of experiment safety analyses.
 The section on the right of Figure \ref{fig:diagra1} shows the accelerated workflow that intends to decrease the calculation burden significantly, which fulfills the requirement of the second part of this Ph.D. thesis objective.
 The first part of the accelerated calculation is the delayed heating in the experiment, which relies on the use of the delayed heating calculation of the streamlined workflow.
-This step entails the creation of a generic material irradiation database with which it is possible to estimate the delayed heating of experiments of any material composition.
+This step entails the creation of a generic material irradiation database with which it is possible to estimate the delayed heating of experiments of arbitrary material composition.
 The second component of the accelerated calculation is the determination of the bounding event outcome.
-This part uses the CFD calculation of the streamlined workflow to train and test several machine-learning algorithms and examine their applicability to further lower the calculation burden.
+This part uses the CFD calculation of the streamlined workflow to train and test several machine learning algorithms and examine their applicability to further lower the calculation burden.
 This objective can be organized into the following main subtopics.
 
 % Additionally, the proposed methodology includes the creation of a generic material irradiation database to further decrease the calculation burden.
-% Furthermore, this work examines the applicability of machine-learning algorithms to reduce this burden even further.
+% Furthermore, this work examines the applicability of machine learning algorithms to reduce this burden even further.
 
 \textbf{Generate a delayed heating database.}
 Research reactors fulfill the radioisotope needs from multiple fields.
 Consequently, the range of materials that form the experiments is vast.
 For example, the medical field requires a supply of cobalt-60, yttrium-90, molybdenum-99, iodine-131, and iridium-192.
 Therefore, this work aims to create a model extensible to all possible irradiated materials.
-The creation of the database involves utilizing the delayed heating calculation scheme to obtain the delayed heating for experiments composed of individual chemical elements.
+The creation of the database involves utilizing the delayed heating calculation workflow to obtain the delayed heating for experiments composed of individual chemical elements.
 % Nevertheless, an experiment usually comprises a mix of different elements.
 % This work creates a method for calculating the delayed heating of an experiment as a combination of the delayed heating of the individual elements that are part of it.
 This work creates a method that uses such a database to calculate the delayed heating in experiments of arbitrary composition.
@@ -195,35 +194,31 @@ This method will be verified for selected materials.
 
 % Surrogate model
 \textbf{Build a data-based model.}
-The thermal-fluids model allows for the determination of the capsule temperature for an experiment.
+The thermal-fluids model enables the determination of the capsule temperature for an experiment.
 However, running the thermal-fluids model for each individual experiment is computationally expensive.
-The data-based model utilizes several machine learning to further lower the computational burden and quickly predict the capsule temperature.
+The data-based model utilizes machine learning to further lower the computational burden and quickly predict the accident outcome.
 The present work compares their performance and examines their applicability to experiment safety analysis.
-Ultimately, the data-based model aims to predict if the experiment capsule melts for any experiment material composition, provided its thermal properties are known.
-Two main approaches were chosen.
-The first approach relies on classification methods to predict the state of the experiment.
-The second approach uses deep-learning to predict the temperature evolution of the experiment.
+Ultimately, the data-based model aims to predict if the capsule melts for any experiment material composition, provided its thermal properties are known.
+Two main strategies were chosen.
+The first strategy relies on classification methods to predict the state of the capsule.
+The second approach uses deep-learning to predict the capsule temperature evolution.
 
 % Demonstrate in ATR
 \textbf{Demonstrate the modeling capability by its application to ATR.}
 The fulfillment of this thesis' objectives is complete with the application, demonstration, and verification of the presented developments on a full-size research reactor.
-This thesis focuses on the \gls*{ATR}, and this objective consists of the following steps.
-Create a detailed delayed heating database for an ATR experiment.
-Tailor the thermal-fluids model to the experiment.
-Train and test a data-based model specific to the experiment.
+This thesis focuses on the \gls*{ATR}, and this objective consists of the following steps: create a detailed delayed heating database for an ATR experiment, tailor the thermal-fluids model to the experiment, and train and test a data-based model specific to the experiment.
 
 
 \section{Outline}
 
-% TODO: I will get back to this after finishing the rest of the document
 This thesis describes the motivation, objectives, methodology, results, and conclusions towards the advancement of the state-of-the-art of research reactor experiment analysis.
 The remainder of this document is organized as follows.
-Chapter 2 presents a literature review organizing and summarizing previous relevant work to this thesis.
-Chapter 3 describes the delayed heating calculation workflow and demonstrates it for  multiple examples.
-Chapter 4 focuses on the shutdown dose rate calculation workflow and several demonstration cases.
-Chapter 5 introduces the generic material irradiation database method, and its verification with selected materials commonly used in nuclear engineering.
-Chapter 6 describes the utilized machine learning algorithms, the implementation strategies, and the train and test of different exercises.
-Chapter 7 summarizes the contributions of this thesis to the nuclear engineering field.
+Chapter \ref{ch:lit} presents a literature review organizing and summarizing previous relevant work to this thesis.
+Chapter \ref{ch:delayedheat} describes the delayed heating calculation workflow and demonstrates it for  multiple examples.
+Chapter \ref{ch:sdr} focuses on the shutdown dose rate calculation workflow and several demonstration cases.
+Chapter \ref{ch:database} introduces the generic material irradiation database method, and its verification with selected materials commonly used in nuclear engineering.
+Chapter \ref{ch:tf} describes the utilized machine learning algorithms, the implementation strategies, and the train and test of different exercises.
+Chapter \ref{ch:concl} summarizes the contributions of this thesis to the nuclear engineering field.
 
 %%%% Figures
 % \begin{figure}[htbp!]

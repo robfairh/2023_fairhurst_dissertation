@@ -1,8 +1,8 @@
 \label{ch:tf}
 
 % Describe how this Ch is organized
-This chapter examines the applicability of machine learning to capture the thermal behavior of an experiment during the transient.
-Data-based modeling, which relies on machine learning, allows to extract features from data generated with the physics-based model and predict the behavior of new data.
+This chapter examines the applicability of machine learning to capture the behavior of an experiment during the transient provided its thermal properties are known.
+Data-based modeling, which relies on machine learning, extracts features from data generated with the physics-based model and predicts the behavior of new data.
 Hence, a thermal-fluids solver is necessary to determine the thermal behavior of the experiment and generate the required data to train and test the data-based model.
 Section \ref{sec:tf} describes the thermal-fluids solvers utilized in this work.
 Additionally, this work compares the performance of different data-based strategies.
@@ -22,7 +22,7 @@ The MOOSE applications define weak forms of the governing equations and modulari
 The kernels are C++ classes containing methods for computing the residual and Jacobian contributions of individual pieces of the governing equations.
 All the software built on the MOOSE framework shares the same \gls*{API}.
 This feature facilitates a relatively easy coupling between different phenomena.
-Additionally, the framework and its applications use \gls*{MPI} for parallel communication and allow deployment on massively parallel cluster-computing platforms.
+Additionally, the framework and its applications use \gls*{MPI} for parallel communication and can be deployed on massively parallel cluster-computing platforms.
 
 % MOOSE role in the calculations
 In this work, MOOSE solves a simplified thermal-fluids model (Section \ref{sec:simpl-model}) to examine the applicability of machine learning to capture the experiment thermal behavior.
@@ -65,7 +65,6 @@ where $q'''$ is the heat source which is uniformly distributed across the experi
 OpenFOAM \cite{weller_tensorial_1998} is a \gls*{FVM} C++ class library originally released as the Field Operation And Manipulation (FOAM) library in 1989, becoming open source in 2004.
 It comprises an extensible range of libraries, solvers, and pre- and post-processing tools, for which the developers intended to make the top-level syntax of the code as close as possible to conventional mathematical notation.
 The result is a C++ class library capable of modeling continuum-mechanics phenomena, such as compressible and incompressible flow, multiphase flow, including various turbulence modeling techniques.
-
 Although it primarily targets \gls*{CFD} problems, it solves other continuum-mechanics problems as well, such as structural mechanics \cite{weller_tensorial_1998} or molecular dynamics \cite{longshaw_mdfoam_2018}.
 Moreover, it supports parallelization via domain decomposition, in which each available processor runs the code in each mesh subdomain.
 
@@ -73,7 +72,8 @@ Further inspection of the thermal-fluids model revealed that even when MOOSE use
 This reason motivated the choice of OpenFOAM as the main solver for more detailed models.
 Furthermore, OpenFOAM has several turbulence models readily available and is capable of solving the density, motion, and temperature of the fluid.
 
-OpenFOAM calculates the capsule temperature during the channel draining event by solving the mass, momentum, and energy conservation equations (Eq. \ref{eq:consv-mass}-\ref{eq:consv-ene-f}) along with the equation of state (Eq. \ref{eq:state}) in the air regions, and the heat conduction equation (Eq. \ref{eq:consv-ene-s}) to solve the temperature in the solid regions \cite{openfoam}
+% OpenFOAM calculates the capsule temperature during the channel draining event by solving the mass, momentum, and energy conservation equations (Equation \ref{eq:consv-mass}-\ref{eq:consv-ene-f}) along with the equation of state (Equation \ref{eq:state}) in the air regions, and the heat conduction equation (Equation \ref{eq:consv-ene-s}) to solve the temperature in the solid regions \cite{weller_tensorial_1998}
+OpenFOAM calculates the capsule temperature during the channel draining event by solving the mass, momentum, and energy conservation equations along with the equation of state in the air regions, and the heat conduction equation to solve the temperature in the solid regions \cite{weller_tensorial_1998}
 \begin{align}
 & \frac{\partial}{\partial t} \rho + \nabla \cdot (\rho \bar{u}) = 0  \label{eq:consv-mass} \\
 & \left( \frac{\partial}{\partial t} (\rho \bar{u}) + \nabla \cdot \left( \rho \bar{u u} \right) \right) + \nabla p - \rho \bar{g} - \mu \Delta \bar{u} = 0 \label{eq:consv-mom} \\
@@ -82,7 +82,9 @@ OpenFOAM calculates the capsule temperature during the channel draining event by
 & h = c_p T \\
 & \rho c_p \frac{\partial}{\partial t} T - k \Delta T - q''' = 0 \label{eq:consv-ene-s}
 \end{align}
-where $\rho$ is the density, $\bar{u}$ is the velocity, $p$ is the pressure, $\bar{g}$ is the gravity, $\mu$ is the dynamic viscosity, $h$ is the enthalpy, $\alpha$ is the thermal diffusivity, $R$ is the ideal gas constant, $c_p$ is the specific heat capacity, $T$ is the temperature, $k$ is the thermal conductivity, and $q'''$ is the volumetric heat source provided by the delayed heating calculation workflow.
+where $\rho$ is the density, $\bar{u}$ is the velocity, $p$ is the pressure, $\bar{g}$ is the gravity, $\mu$ is the dynamic viscosity, $h$ is the enthalpy, $\alpha$ is the thermal diffusivity, $R$ is the ideal gas constant, $c_p$ is the specific heat capacity, $T$ is the temperature, $k$ is the thermal conductivity, and $q'''$ is the volumetric heat source.
+While the air and capsule thermal properties are fixed, the experiment thermal properties are defined by the user and are specific to each experiment.
+The function for the volumetric heat source is provided by the delayed heating calculation workflow.
 
 % https://openfoamwiki.net/index.php/ChtMultiRegionFoam
 % https://www.tfd.chalmers.se/~hani/kurser/OS_CFD_2016/TuroValikangas/Report_Turo.pdf
@@ -119,7 +121,7 @@ And this process is repeated until convergence.
 % Classification
 This work uses several classification algorithms to determine if the capsule encasing the experiment melts in case of a channel draining event.
 Classification is the process of recognizing certain patterns in a dataset and grouping the samples into categories based on those patterns.
-Machine learning classification algorithms use input training data to determine such categories and then predict the likelihood that subsequent data points will fall into them.
+Machine learning classification algorithms use training data to determine such categories and then predict the likelihood that subsequent data points will fall into them.
 This work utilizes the following classification techniques: \Gls*{SVM}, \Gls*{DT}, \Gls*{RF}, \Gls*{KNN}, \Gls*{LogR}, and \Glspl*{FNN}.
 
 % Regression
@@ -162,7 +164,7 @@ y_i(&w \cdot \phi(x_i) + b) \geq 1-\xi_i \\
 \end{align}
 where $C$ is the regularization factor, which gives more weight to minimizing the flatness or the error, $\xi_i$ is the slack variable, which guards against outliers.
 Some problems are not perfectly separable with a hyperplane.
-Equation \ref{eq-svm-3} allows some samples to be at a $\xi_i$ distance from their correct boundary.
+The optimization of Equation \ref{eq-svm-3} allows some samples to be at a $\xi_i$ distance from their correct boundary.
 A larger regularization parameter penalizes the approximation error, leading to its decrease during the optimization.
 % An increase in the regularization parameter leads to a decrease of the approximation error.
 % A larger $\epsilon$ decreases the number of support vectors, reducing the accuracy of the approximation.
@@ -222,7 +224,6 @@ This method reduces the overfitting and increases its precision.
 The algorithm consists of a collection of decision trees.
 It is based on the bootstrap aggregating method or \textit{bagging} \cite{breiman_bagging_1996}, which chooses the training data for each decision tree at random with replacement, fits the \glspl*{DT}, and then combines their results by voting.
 The purpose of the randomness is to decrease the variance of the forest and decouple the prediction error \cite{pedregosa_scikit-learn_2011}.
-
 % RFR
 The algorithm for \gls*{RFR} is very similar, but instead of combining the different DT results by voting, the result is an average of the predictions of the different trees.
 
@@ -365,13 +366,13 @@ Finally, the hidden state $h_t$ is a filtered version of the cell state $C_t$, a
 
 Overall, the network can be visualized as a mathematical function whose inputs are the time-dependent features $x_t$ which produce the time-dependent outputs $h_t$.
 The training of the network is a bit more cumbersome than for other neural networks.
-As both the features and outputs are time-dependent, a common training strategy entails converting the time-dependent problem to a static supervised problem, wherein the output of previous time steps act as input to the next time step.
+As both the features and outputs are time-dependent, the common training strategy converts the time-dependent problem into a static supervised problem, wherein the output of previous time steps act as input to the next time step.
 The supervised problem separates the data into \textit{look-back} and \textit{look-forward} steps.
 The look-back steps are the number of steps that the network uses to predict a certain number of look-forward steps at a time.
 Figure \ref{fig:lstm-convert} displays an example of the conversion process.
 For the output time-series $h$, with $N_t$ time steps, the input and output of the supervised problem take the shape $(N_t-N_{lb}-N_{lf}) \times N_{lb}$ and $(N_t-N_{lb}-N_{lf}) \times N_{lf}$, respectively, where $N_{lb}$ and $N_{lf}$ are the number of look-back and look-forward steps.
 Additionally, the network is able to learn a dependency on the features $x_t$ by adding this information to the inputs of the supervised problem.
-Assuming static features $x = x_t$, the input of the supervised problem takes the shape $(N_t-N_{lb}-N_{lf}) \times (N_x + N_{lb})$, where $N_x$ is the number of features.
+Assuming static features $x_t = x$, the input of the supervised problem takes the shape $(N_t-N_{lb}-N_{lf}) \times (N_x + N_{lb})$, where $N_x$ is the number of features.
 
 % Conversion from unsupervised to supervised problem
 % y_test = [N_samples x (len_t_series-lookback-lookforward) x lookforward]
@@ -415,7 +416,7 @@ The surrogate is easier to optimize than the objective function.
 The method finds the sample that performs best on the surrogate function to evaluate it on the objective function.
 An acquisition function guides the selection of the next sample from the search space.
 The \textit{expected improvement} is one of the most common acquisition functions, and it indicates the region of the search space that is most likely to improve.
-Overall, this method allows to reduce the number of evaluations necessary to determine the optimal parameters.
+Overall, this method reduces the number of evaluations necessary to determine the optimal parameters.
 
 In summary, the algorithm can be itemized as follows
 \begin{enumerate}
@@ -467,6 +468,9 @@ This model neglects the heat production ($q''' = 0$) in the capsule to simplify 
 This assumption is justified by the fact that the volume of the experiment is considerably larger than the capsule's.
 % This is a conservative assumption.
 % In the three-dimensional problem, the experimental device has a larger surface-area-to-volume ratio, and therefore, a higher heat loss rate and lower temperatures.
+% BC and ICs
+The boundary conditions defining the problem are adiabatic walls on the side and top edges, while the temperature at the bottom of the geometry is fixed at room temperature (298 K or 25 $^\circ$C), as shown in Figure \ref{fig:tf-geo}.
+The initial condition is room temperature for the whole geometry.
 
 \begin{figure}[htbp!] %or H 
     \centering
@@ -475,10 +479,6 @@ This assumption is justified by the fact that the volume of the experiment is co
     \caption{Two-dimensional geometry of a post-irradiation experiment cooled by the natural circulation of air. All dimensions are expressed in $cm$.}
     \label{fig:tf-geo}
 \end{figure}
-
-% BC and ICs
-The boundary conditions defining the problem are adiabatic walls on the side and top edges, while the temperature at the bottom of the geometry is fixed at room temperature (298 K or 25 $^\circ$C), as shown in Figure \ref{fig:tf-geo}.
-The initial condition is room temperature for the whole geometry.
 
 % Laminar flow
 This model assumes a laminar flow for solving the equations of motion and temperature of the air.
@@ -534,7 +534,7 @@ Both MOOSE and OpenFOAM predict an almost identical time evolution, demonstratin
 
 \begin{figure}[htbp!] %or H 
     \centering
-    \includegraphics[width=0.55\linewidth]{figures/verification}
+    \includegraphics[width=0.45\linewidth]{figures/verification}
     \hfill
     \caption{Time evolution of the highest temperature in the capsule calculated by MOOSE and OpenFOAM.}
     \label{fig:tf-val}
@@ -572,9 +572,9 @@ Although this model has certain limitations, this exercise intends to simplify t
 \label{sec:datapros}
 
 Machine learning derives relationships from data, allowing data-based models to solve complex problems quickly.
-In this exercise, the collected data comprises the time evolution of the highest temperature in the capsule for certain material properties: density $\rho$, thermal conductivity $k$, and heat capacity $c_p$ and the coefficients defining the delay heating: initial value $q0$ and decay time $\tau$.
+In this exercise, the collected data comprises the time evolution of the highest temperature in the capsule for certain material properties: density $\rho$, thermal conductivity $k$, and heat capacity $c_p$; and the coefficients defining the delayed heating: initial value $q0$ and decay time $\tau$.
 These five coefficients are the input variables or \textit{features} of the model, and the highest temperature in the capsule is the output or \textit{label}.
-The thermal properties values correspond to the 33 first materials that are shown in Appendix \ref{ap:mat_props}, which correspond to aluminum through iridium.
+The thermal properties values correspond to the 33 first materials that are shown in Appendix \ref{ap:mat_props}, including all materials from aluminum to iridium.
 $q_0$ comprises 45 uniformly distributed values between 10$^7$ and 10$^8$ W/m$^3$, and 20 between 10$^8$ and 5 $\times$ 10$^8$ W/m$^3$, totaling 65 unique values.
 $\tau$ comprises five uniformly distributed values between 20 and 100 seconds.
 The combination of all these variables leads to a total of 10725 samples.
@@ -650,7 +650,7 @@ Standardization is a feature scaling technique that is a common requirement for 
 If a feature has a variance that is orders of magnitude larger than the others, it might dominate the objective function, falling within a local minimum during training and making the estimator unable to learn as expected.
 After the data pre-processing, the data-based model is trained using the training dataset for the standardized input and output variables $\tilde{X}_{train}$ and $\bar{Y}_{train}$.
 The data-based model uses the following machine learning techniques: DT, FNN, KNN, LogR, RF, and SVM.
-Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample, as shown in Figure \ref{fig:data-class0}.
+Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample and coefficients defining the delayed heating, as shown in Figure \ref{fig:data-class0}.
 
 \begin{figure}[htbp!] %htbp! or H
   \centering
@@ -686,7 +686,7 @@ Figure \ref{fig:nlin-fit} displays an example of the non-linear curve fitting to
 
 \begin{figure}[htbp!] %htbp! or H
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/non-linear-fit}
+  \includegraphics[width=0.50\linewidth]{figures/non-linear-fit}
   \caption{Example of the non-linear curve fitting to discretize the capsule temperature evolution.}
   \label{fig:nlin-fit}
 \end{figure}
@@ -702,7 +702,7 @@ The data handling process for this method is summarized in Figure \ref{fig:data-
 The coefficients $A$, $\lambda_1$, and $\lambda_2$ compose an intermediate output variable $\hat{Y}$ with shape $N_{samples} \times 3$.
 The samples are separated into an 80-20 training-testing split, and standardization is applied.
 The data-based model is trained with the standardized input and output variables, $\tilde{X}_{train}$ and $\tilde{Y}_{train}$.
-Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample, as shown in Figure \ref{fig:data-reg1}.
+Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample and coefficients defining the delayed heating, as shown in Figure \ref{fig:data-reg1}.
 Then, the trained model predicts $\tilde{Y}$ that is used to reconstruct the temperature time evolution $Y$, and obtain the output variable $\bar{Y}$.
 This work uses \gls*{LR}, \gls*{SVR}, \gls*{DTR}, and \gls*{RFR} to build the data-based model.
 However, some of these methods are unable to capture the non-linear behavior of the different curve fitting coefficients.
@@ -742,7 +742,7 @@ The network optimization set the number of nodes in the hidden layers, the train
 % Bayesian optimization
 Bayesian optimization using Gaussian processes (Section \ref{sec:opt}) optimized the network by maximizing the $R^2$ score.
 The optimal configuration was 169 and 133 nodes for the hidden layers, a learning rate of $6.9 \times 10^{-4}$, and a batch size of 49.
-Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample, as shown in Figure \ref{fig:data-reg2}.
+Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample and coefficients defining the delayed heating, as shown in Figure \ref{fig:data-reg2}.
 Then, the trained model predicts $\tilde{Y}$ that is de-normalized into $Y$, and translated into the output variable $\bar{Y}$.
 
 \begin{figure}[htbp!] %htbp! or H
@@ -771,7 +771,7 @@ The network optimization defines the number of nodes in the LSTM layers, the num
 The training of the network uses the Adam optimizer to minimize the \gls*{MAE}, and the learning rate is fixed to $5 \times 10^{-4}$.
 Bayesian optimization using Gaussian processes (Section \ref{sec:opt}) optimized the network by maximizing the $R^2$ score.
 The optimal configuration was 167, 98, 62, and 139 nodes for the hidden layers, six look-back steps, and a batch size of 12.
-Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample, as shown in Figure \ref{fig:data-reg3}.
+Once the model is trained, the model can predict the outcome of the transient by reading the material properties of a specific sample and coefficients defining the delayed heating, as shown in Figure \ref{fig:data-reg3}.
 Then, the trained model predicts $\tilde{Y}$ that is de-normalized into $\hat{Y}$, which is used to reconstruct the time-series $Y$ and translated into the output variable $\bar{Y}$.
 
 \begin{figure}[htbp!] %htbp! or H
@@ -873,7 +873,7 @@ However, the method contains multiple steps, wherein uncertainties could be intr
 
 Figure \ref{fig:t-evol} displays some examples of time-evolution prediction using the three approaches.
 It is possible to discern the time discretization in all the curves.
-As machine-learning algorithms have to predict the temperature evolution, it simplifies the learning process to reduce the number of time steps.
+As machine learning algorithms have to predict the temperature evolution, it simplifies the learning process to reduce the number of time steps.
 For the most part, when trying to determine whether the capsule melts or not, a coarse time discretization is still enough to capture this behavior.
 When trying to predict the exact time when the capsule melts, such a coarse time discretization introduces considerably large errors for some of the testing samples, which is the cause of the large maximum t$_{Melt}$ relative errors shown in Table \ref{tab:results-2}.  
 Overall, the predicted values approximate well the expected values, and hence the mean t$_{Melt}$ relative error is low, as shown in Table \ref{tab:results-2}.
@@ -905,7 +905,7 @@ Overall, the predicted values approximate well the expected values, and hence th
 \subsection{Non-dimensional thermal properties}
 
 This section investigates an alternative for the classification problem to reduce the model complexity.
-Instead of using all the material thermal properties to train/test the model (three features), the model uses only one feature: the thermal diffusivity
+Instead of using all the material thermal properties (three features) to train and test the model, the model uses only one feature: the thermal diffusivity
 \begin{align}
 \alpha &= \frac{k}{\rho c_p}
 \end{align}
@@ -931,7 +931,7 @@ A comparison between the results from Section \ref{sec:comp} and these results s
 Although condensing the thermal properties into one value seems to decrease the complexity of the model, the accuracy and recall of the model worsen slightly.
 This is because using the thermal diffusivity as a feature causes the model to lose some resolution, as the thermal diffusivity ``hides'' the variations in the thermal properties.
 Figure \ref{fig:pre-cnfm-alpha-2} helps to visualize this phenomenon.
-For example, if the model was trained with materials with extreme values - i.e., lithium and iridium, all the rest of the materials' thermal properties would fall within the lithium and iridium bounds.
+For example, if the model is trained with materials with extreme values - i.e., lithium and iridium, most of the materials' thermal properties fall within the lithium and iridium bounds.
 If sodium becomes the testing sample, for the model trained with all the thermal properties, its thermal properties are within the bounds of the training data.
 On the other hand, for the model trained with the thermal diffusivity, the sodium testing sample falls outside the bounds of the training data, deteriorating the model prediction.
 Although these results suggest that training the model with all the thermal properties is best, the results do not worsen considerably, and more investigation should confirm/refuse this analysis.
@@ -976,8 +976,8 @@ Although these results suggest that training the model with all the thermal prop
 \label{sec:syn-mat}
 
 % Increase statistics
-This section investigates the training/testing of the models using synthetic thermal properties.
-The motivation for this study is to augment the training/testing data to broaden the range of applicability of the data-based model to more possible irradiated materials.
+This section investigates the training and testing of the models using synthetic thermal properties.
+The motivation for this study is to augment the training and testing data to broaden the range of applicability of the data-based model to more possible irradiated materials.
 These synthetic thermal properties are generated by randomly sampling each thermal property assuming a uniform distribution between the minimum and maximum values from the list of 82 real materials included in Appendix \ref{ap:mat_props}.
 
 % New data format
@@ -999,7 +999,6 @@ However, all these values are very small and acceptable, and the FNN remains as 
 Figure \ref{fig:pre-cnfm-syn} displays the confusion matrix for the LogR and the FNN cases.
 The comparison of both results shows a clear improvement from LogR to FNN in the mislabeled samples.
 
-% TODO: complete description here
 A comparison between the results from Section \ref{sec:comp} and these results shows that all methods perform better when considering real data for the thermal properties.
 Figure \ref{fig:pre-syn-mats} shows the relationship between thermal properties for selected real materials.
 The plots show certain correlation between the different thermal properties.
@@ -1054,7 +1053,7 @@ In conclusion, this assumption causes the models to learn the correlations betwe
   \begin{subfigure}[b]{0.49\textwidth}
     \centering
     \includegraphics[width=0.85\textwidth]{figures/k_cp}
-    \caption{Heat Capacity vs. Thermal conductivity.}
+    \caption{Heat capacity vs. thermal conductivity.}
   \end{subfigure}
   \caption{Relationship between thermal properties for selected materials.}
   \label{fig:pre-syn-mats}
@@ -1097,7 +1096,7 @@ The newer methods still have some drawbacks, and some results show estimation er
 
 For this reason, this work uses a slightly different approach where a function of variable number of terms is chosen and their coefficients are fitted to the delayed heating.
 Then, by looking at the L$_2$-norm error between the reference values and the fitted functions, it is possible to determine the most appropriate number of terms.
-The implementation is based on the \textit{curve\_fit} function \cite{2020SciPy-NMeth}.
+The implementation uses the \textit{curve\_fit} function \cite{2020SciPy-NMeth}.
 
 To investigate this source decomposition strategy, this study uses the delayed heating over time from the demonstration problem from Section \ref{sec:demo} and the ATR experiment from Section \ref{sec:atrexp}.
 Figures \ref{fig:modes-demo} and \ref{fig:modes-atr} display the results for the demonstration case and the ATR experiment.
@@ -1105,7 +1104,7 @@ Figures \ref{fig:modes-demo-a} and \ref{fig:modes-atr-a} show the approximation 
 A function using three terms is good enough to represent the delayed heating over time.
 Figures \ref{fig:modes-demo-b} and \ref{fig:modes-atr-b} confirm this by displaying the $L_2$-norm error for the cases with an increasing number of terms.
 For the ATR case, the $L_2$-norm error for the 3-term and 4-term functions are equal.
-The \textit{curve\_fit} function fails to resolve the coefficients of the 4th term because more delayed heating data-points are required.
+The \textit{curve\_fit} function fails to resolve the coefficients of the 4th term because more delayed heating data points are required.
 
 Figures \ref{fig:modes-demo-c} and \ref{fig:modes-atr-c} display the individual terms of the approximated delayed heating.
 The delayed heating of the demonstration case is decomposed into the following functions
@@ -1193,24 +1192,24 @@ This behavior is captured by the functions with smallest and largest decay times
 % Conclusions
 These results show that the delayed heating can be approximated with a linear combination of exponential decay functions.
 Utilizing three terms in the linear combination has proven a good approximation for the demonstration problem and the ATR experiment.
-Additionally, the main implication from these results is that the data-based models utilized in the simplified problem from Section \ref{sec:simpl-model} are not directly applicable to a real reactor without a small modification.
+Additionally, the main implication from these results is that the data-based models utilized in the simplified problem from Section \ref{sec:simpl-model} are not directly applicable to a real experiment without a small modification.
 Previously, the data-based models of the simplified model defined five input features - i.e., $\rho$, $c_p$, $k$, $q_0$, and $\tau$.
-The new models should also include the exponential coefficients defining all the terms in the delayed heating decomposition: $\rho$, $c_p$, $k$, $q_{1,0}$, $q_{2,0}$, $q_{3,0}$, $\tau_1$, $\tau_2$, and $\tau_3$.
+The new models should include the exponential coefficients defining all the terms in the delayed heating decomposition: $\rho$, $c_p$, $k$, $q_{1,0}$, $q_{2,0}$, $q_{3,0}$, $\tau_1$, $\tau_2$, and $\tau_3$.
 
 
 \section{ATR experiment}
 \label{sec:atr}
 
 This section studies the application of data-based modeling to a full-size experiment hosted by the ATR.
-The training/testing data is the temperature evolution of the capsule during the channel draining event, and it is generated using OpenFOAM.
+The training and testing data is the temperature evolution of the capsule during the channel draining event, and it is generated using OpenFOAM.
 % fin vs unfinned
-As the capsule/experiment specification for ATR is not openly available, the designs utilized in \gls*{HFIR} experiments guide the modeling assumptions.
+As the capsule specification for ATR is not openly available, the designs utilized in \gls*{HFIR} experiments guide the modeling assumptions.
 Figure \ref{fig:hfir-rabbit} shows a typical finned rabbit design utilized in HFIR.
 The term rabbit housing refers to the outer capsule, which is in direct contact with the reactor primary coolant, used to contain the sample material.
 
 \begin{figure}[htbp!] %or H 
     \centering
-    \includegraphics[width=0.45\linewidth]{figures/finned-rabbit}
+    \includegraphics[width=0.30\linewidth]{figures/finned-rabbit}
     \hfill
     \caption{Typical finned capsule (also known as rabbit) design utilized in HFIR experiments. Image reproduced from \cite{hfir}.}
     \label{fig:hfir-rabbit}
@@ -1222,7 +1221,7 @@ There are a total of six different rabbit housing designs approved for HFIR \cit
   \item standard finned rabbit: this is the original design developed for use in a single tube hydraulic facility to conduct irradiations supporting isotope production.
   \item increased bore finned rabbit: similar to the standard finned rabbit with a larger inner diameter to provide larger volume for sample material.
   \item reduced bore finned rabbit: similar to standard finned rabbit with a decreased inner diameter to minimize sample temperature when irradiating small samples.
-  \item un-finned rabbit: the whole concept of finned tubes is to increase the outside surface area of the tube in contact with the coolant and enhance its cooling. Un-finned rabbits allow for higher testing temperatures in the samples and are primarily used to conduct irradiations supporting materials irradiation testing.
+  \item un-finned rabbit: the whole concept of finned tubes is to increase the outside surface area of the tube in contact with the coolant and enhance its cooling. Un-finned rabbits allow for higher testing temperatures in the samples and are primarily used to conduct irradiations supporting material testing.
   \item un-finned selenium rabbit: similar to un-finned rabbit, with the specific use of selenium pellet irradiation.
   \item perforated rabbit: allows the reactor coolant to flow into the specimens to maintain test specimen temperature as low as possible. It is exclusively used for material irradiation testing when low testing temperatures are required.
 \end{itemize}
@@ -1231,8 +1230,9 @@ There are a total of six different rabbit housing designs approved for HFIR \cit
 This work adopts the un-finned rabbit capsule design as the problem geometry for the thermal-fluids model of the ATR experiment, as shown in Figure \ref{fig:atr-geo}.
 The geometry uses a two-dimensional representation due to azimuthal symmetry, and it is represented as a wedge with a symmetric 2$^\circ$ opening with respect to the symmetry plane.
 Two aspects should be mentioned about the modeling choice.
-First, modeling azimuthal symmetry in OpenFOAM requires a wedge representation of the geometry instead of a plane as in \gls*{FEM} tools as it is a \gls*{FVM} tool and requires the definition of volumes in the mesh.
-Second, the choice of a two-dimensional representation for other rabbit capsule designs that include fins may be inaccurate and should be investigated.
+First, modeling azimuthal symmetry in OpenFOAM requires a wedge representation of the geometry as it is a \gls*{FVM} tool.
+\gls*{FVM} tools require the definition of volumes in the mesh, while azimuthal symmetry is represented as a plane in \gls*{FEM} tools. 
+Second, the choice of a two-dimensional representation for other rabbit designs that include fins may be inaccurate and should be investigated.
 
 The dimensions of the geometry are based on the ATR experiment dimensions and typical dimensions of HFIR finned and un-finned rabbits.
 This exercise focuses on the A1 experiment position which has a fixed 0.625'' diameter or 7.94 mm radius and sets the radius of the channel outer wall.
@@ -1254,7 +1254,7 @@ Finally, the capsule length is set by the experiment position height, being 1.22
 
 \begin{figure}[htbp!] %or H 
     \centering
-    \includegraphics[width=0.45\linewidth]{figures/atr-geometry}
+    \includegraphics[width=0.40\linewidth]{figures/atr-geometry}
     \hfill
     \caption{ATR experiment geometry for the thermal-fluids model. Dimensions not at scale to better display the model regions. Dimensions expressed in $m$.}
     \label{fig:atr-geo}
@@ -1381,7 +1381,7 @@ As mentioned earlier, OpenFOAM supports the parallelization of the simulation vi
 The parallelization involves: decomposition of mesh and fields (\textit{decomposePar} utility), running the application in parallel, and re-composition of the fields (\textit{reconstructPar} utility).
 This work uses the \textit{scotch} method for the domain decomposition, which requires no geometric input from the user and attempts to minimize the number of boundaries.
 
-To determine the best mesh discretization-number of processors pair, Table \ref{tab:serial-parallel} shows the execution time for simulations running up to 100 second-simulation time with an increasing number of processors and four different meshes with increasing number of cells.
+To determine the best mesh discretization number of processors pair, Table \ref{tab:serial-parallel} shows the execution time for simulations running up to 100 second-simulation time with an increasing number of processors and four different meshes with increasing number of cells, which are labelled A through D.
 For all the meshes, the execution time decreases for an increasing number of processors, up to eight processors.
 After this number, the execution time increases.
 For a small number of cells, the communication between processors may dominate the computations, which causes the execution time to increase.
@@ -1391,23 +1391,22 @@ The parallel runs are reserved for \gls*{HPC} machines where the job scheduling 
 
 \begin{table}[htbp!]
   \centering
-  \caption{Execution time in seconds for simulations with an increasing number of processors and four different meshes with increasing number of cells.}
+  \caption{Execution time in minutes for simulations with an increasing number of processors and four different meshes (labelled A through D) with increasing number of cells.}
   \label{tab:serial-parallel}
 \begin{tabular}{c|ccccc}
  \toprule
     & \multicolumn{5}{c}{Number of processors}       \\
  \midrule
-    & 1       & 4       & 8       & 12     & 16      \\
+  mesh label  & 1      & 4      & 8      & 12    & 16     \\
  \midrule
-  A & 1591.6  & 747.21  & 564.84  & 583.72 & 598.51  \\
-  B & 1132.87 & 961.53  & 682.86  & -      & 731.33  \\
-  C & 2264.35 & 1513.1  & 1092.81 & -      & 1104.77 \\
-  D & 4988.23 & 2540.45 & 1982.96 & -      & 2321.46 \\
+  A & 26.53  & 12.45  &  9.41  &  9.73 &  9.98  \\
+  B & 18.88  & 16.03  & 11.38  &  -    & 12.19  \\
+  C & 37.74  & 25.22  & 18.21  &  -    & 18.41  \\
+  D & 83.14  & 42.34  & 33.05  &  -    & 38.69  \\
  \bottomrule
 \end{tabular}
 \end{table}
 
-% TODO: Add full case to Appendix
 
 \subsection{Results}
 
@@ -1481,7 +1480,6 @@ q'''(t) [W/m^3] &= 6.491 \times 10^6 e^{(-t/65308.004 s)} + 2.935 \times 10^7 e^
 The material properties of $U_3Si_2/Al$ were calculated using \cite{U3Si2Al} as reference.
 The molecular weight is 90.32 g/mol, the density is 5660 kg/m$^3$, the heat capacity is 1290 J/kg/K, and the thermal conductivity is 84 W/m/K.
 Figure \ref{fig:atr-u3si2al} shows the evolution of the highest temperature in the capsule for the experiment of $U_3Si_2/Al$.
-% TODO: need to tailor to the results 
 The capsule reaches the maximum temperature of 1047.6 K at 1200 seconds, and it is located in the capsule's inner wall at the middle of the total height.
 The temperature in the capsule shows a similar behavior than for the experiment of aluminum.
 The temperature exhibits quick and slow responses, corresponding to the smallest and largest decay times in the volumetric heat.
@@ -1498,7 +1496,7 @@ Hence, the temperature increases rapidly from the initial condition, and after r
 
 % data-based: classification
 The next step is the creation of the data-based model.
-This step requires the repeated run of the thermal-fluids model described above to create the training/testing data.
+This step requires the repeated run of the thermal-fluids model described above to create the training and testing data.
 The data-based model relies on the classification strategy described in Section \ref{sec:datapros} to predict the state of the experiment's capsule.
 Based on the results from Section \ref{sec:sou_decomp}, the features of the model are: $\rho$, $c_p$, $k$, $q_{1,0}$, $q_{2,0}$, $q_{3,0}$, $\tau_1$, $\tau_2$, and $\tau_3$.
 
@@ -1506,7 +1504,7 @@ Based on the results from Section \ref{sec:sou_decomp}, the features of the mode
 % SOURCE DATA: cfd/source_decomposition.ipynb
 The material data ($\rho$, $c_p$, $k$) is generated assuming a multivariate normal distribution centered on real material data, which is shown in Appendix \ref{ap:mat_props}.
 Based on the results from Section \ref{sec:syn-mat}, the use of synthetic material data wherein the variables are independent reduces the accuracy of the model.
-Hence, using a multivariate normal distribution allows to preserve a certain correlation between the thermal properties.
+Hence, using a multivariate normal distribution preserves a certain correlation between the thermal properties.
 The synthetic data is generated using the \textit{multivariate\_normal} function from the \textit{NumPy} \textit{random} package.
 This function takes a mean value and covariance.
 The mean value is given by the real material data at which the normal distribution is centered.
@@ -1530,7 +1528,7 @@ Figure \ref{fig:atr-syn-mats-1} shows some examples of synthetic material proper
   \begin{subfigure}[b]{0.49\textwidth}
     \centering
     \includegraphics[width=0.85\textwidth]{figures/syn-k_cp}
-    \caption{Heat Capacity vs. thermal conductivity.}
+    \caption{Heat capacity vs. thermal conductivity.}
   \end{subfigure}
   \caption{Synthetic material properties.}
   \label{fig:atr-syn-mats-1}
@@ -1578,7 +1576,7 @@ The combination of the synthetic material properties and source data creates 122
 The output data is generated by running the thermal-fluids model.
 The simulation time was two hours (7200 seconds) after the accident.
 Because the simulations utilized an adaptive time stepper, the outputs were adjusted to give them a fixed length by linear interpolation.
-The interpolation was calculated for 100 points between 0-500 seconds, and 101 points between 500-7200 seconds.
+The interpolation was calculated for 100 points from 0 to 500 seconds and 101 points from 500 to 7200 seconds.
 Consequently, the shape of the output data $Y$ was 1227 $\times$ 201.
 Finally, the data is prepared using the scheme described in Figure \ref{fig:data-class}.
 
@@ -1624,12 +1622,11 @@ The comparison of both results shows a clear improvement from KNN to FNN in the 
 
 
 \section{Conclusions}
-% LEFT HERE
 
 % Intro
-The prediction of the temperature in selected locations of a nuclear reactor is of paramount importance to ensure their integrity during a transient.
+The prediction of the temperature in selected locations of a nuclear reactor is of paramount importance to ensure component integrity during a transient.
 This work focuses on the safety analysis of research reactor experiments.
-This chapter studied the response of a simplified model experiment and an ATR experiment to the channel draining event, where the experiments are left uncovered and the natural circulation of air cools them down.
+This chapter studied the response of a simplified model of a experiment and an ATR experiment to the channel draining event, where the experiments are left uncovered and the natural circulation of air cools them down.
 
 Additionally, this chapter investigated the applicability of data-based modeling and machine learning to forecast the state of an experiment's capsule during the accident.
 The study focused first on the simplified model experiment to guide the choice of a method for the ATR experiment.
@@ -1639,16 +1636,16 @@ The second strategy added the answer to the question of when the capsule melted.
 Both strategies obtained satisfactory results in terms of accuracy and recall.
 The melting time prediction had large maximum relative errors, in the order of 30 to 50\%.
 Nevertheless, the different methods showed low mean relative errors, showing an overall successful performance.
-In general, this simplified model proved that data-based modeling enables the quick determination of whether the capsule melts or not for any given irradiated material.
+In general, this simplified model proved that data-based modeling enables the quick determination of whether the capsule melts or not for any given irradiated material provided its thermal properties are known.
 
 Further analysis of the delayed heating results in Chapter \ref{ch:delayedheat} showed that the application of the data-based modeling to the ATR experiment required a slight modification to properly capture the heat evolution in the experiment.
 Consequently, the delayed heating in the ATR experiment was modeled as the linear combination of three exponential decay functions.
 This chapter also described the assumptions and simplifications considered in the making of the thermal-fluids model of the ATR experiment.
 Two results were shown.
 First, for an experiment of aluminum, and second, for an experiment of $U_3Si_2/Al$.
-While the first case showed temperatures lower than the melting temperature, the second case showed a temperature exceeding 1000 K, meaning that it would melt.
+While the first case showed temperatures lower than the melting temperature, the second case showed a temperature exceeding 1000 K, which results in the capsule melting.
 
-Finally, the repeated run of the thermal-fluids model with both synthetic material and source data allows to obtain data for the training/testing of a data-based model of the ATR experiment.
+Finally, the repeated run of the thermal-fluids model with both synthetic material and source data generates data for the training and testing of a data-based model of the ATR experiment.
 The results of the testing dataset show high accuracy and recall for most of the machine learning algorithms.
 These results prove that this work's proposed method relying on data-based modeling decreases the computational expense and enables the fast determination of the accident outcome.
 

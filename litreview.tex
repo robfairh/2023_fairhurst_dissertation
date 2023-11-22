@@ -27,7 +27,7 @@ Ilas et al. \cite{ilas_modeling_2015} calculated the decay heat in the HFIR irra
 Hawkes et al. \cite{hawkes_sensitivity_2015} evaluated with ORIGEN-2.2 the thermal behavior of the AGR-2 experiment in the ATR, an experiment fueled with \gls*{TRISO} particles.
 % The experiment heat rate was calculated with MCNP and JMOCUP \cite{sterbentz_mocup_2009}, featuring a couple utility program of MCNP5 and ORIGEN2.2.
 % Need for precise method
-However, an accurate assessment of the deposited energy across the reactor geometry allows to better determine the heat removal requirements and ensure an effective cool down.
+However, an accurate assessment of the deposited energy across the reactor geometry can better determine the heat removal requirements and ensures an effective cool down.
 Moreover, the regulatory authorities and the industry are interested in more precise calculations for economic reasons and \gls*{UQ}.
 Therefore, instead of assuming the local deposition of heat, this work focuses on more detailed methods targeting the specific reactor regions hosting the experiments.
 
@@ -57,7 +57,7 @@ The main contributions to the nuclear heating in an operating reactor can be sum
   \item Prompt neutron heating: deposition of the recoil energy of nuclei after a neutron collision and energy deposition of resulting charged particles from neutron interactions - e.g., heating caused by protons released in $(n,p)$ interactions.
   \item Delayed neutron heating: energy deposition of resulting charged particles created with a delay after a neutron interaction - e.g., heating caused by alpha particles resulting from actinide activation and heating caused by beta particles emitted from fission product decay.
   \item Prompt gamma heating: energy deposition of resulting charged particles of photo-atomic and photo-nuclear interactions. Prompt photons are emitted immediately after a neutron interaction. This includes prompt gamma radiation from the rapid de-excitation of the fission fragments and capture gammas.
-  \item Delayed gamma heating: same energy deposition mechanism as prompt photons. Delayed photons are the result of activation and fission product decays.
+  \item Delayed gamma heating: same energy deposition mechanism as prompt photons. Delayed photons are the result of activation and fission product decay.
 \end{itemize}
 % The delayed neutron contribution can be neglected as it is very low and decays within minutes.
 % https://nuclear-power.com/wp-content/uploads/2015/10/Yield-of-Delayed-Neutrons.png
@@ -85,21 +85,21 @@ After reactor shutdown, the prompt emissions no longer contribute to the heating
 These contributions can be further classified by the location in which the emitted particles deposit their energy.
 The delayed neutron heating is caused by charged particles that deposit their energy locally due to their short range.
 The delayed gamma heating is caused by photons that deposit their energy globally and must be transported \cite{peterson-droogh_current_2018}.
-The following formula calculates the nuclear heating after reactor shutdown
+The following formula calculates the nuclear heating after reactor shutdown or delayed heating
 \begin{align}
 H_{T} = H_{ch} + H_{\gamma, Tr} \label{eq:heat}
 \end{align}
 where $H_{T}$ is the total heat deposited in the region of interest, $H_{ch}$ is the energy deposited by charged particles in the region of interest, $H_{\gamma, Tr}$ is the energy deposited in the region of interest resulting from photon transport.
 
 A common method for the calculation of the delayed gamma contribution is the so-called Rigorous 2-Step (R2S) process \cite{chen_rigorous_2002}.
-Because the R2S process consists of three steps, this work refers to it as the formal 3-step process.
+Because the R2S process consists of three steps, this work refers to it as the \textit{formal 3-step process}.
 This method consists of the following three steps:
 \begin{itemize}
-  \item First, a neutron transport calculation determines the neutron flux spatial and energy distribution during reactor operation.
-  \item Second, an activation calculation estimates the energy distribution and emission probability of the photon decays after reactor shutdown.
+  \item First, a neutron-transport calculation determines the neutron flux spatial and energy distribution during reactor operation.
+  \item Second, an activation calculation estimates the energy distribution and emission probability of the photon decay after reactor shutdown.
   \item Third, a photon-transport calculation evaluates the delayed gamma heating.
 \end{itemize}
-Because the R2S process consists of three steps, this work refers to it as the \textit{formal 3-step process}.
+
 % Nuclear heating in experiment positions - Pre-defined values
 Earlier versions of this method accounted for the delayed photons through a fixed-source calculation based on pre-defined gamma emission probabilities.
 % ambrosek_improved_1995 - they also calculated the neutron and prompt photon heating
@@ -137,10 +137,10 @@ Noh et al. \cite{noh_estimation_2018} coupled MCNP and ORIGEN to study the delay
 % They utilized ORIGEN, as well, for calculating the heat deposition of charged particles in the iridium targets.
 % % The contribution of the prompt photons, delayed photons, and the charged particles from activation product decay are 54\%, 19\%, and 27\% of the total heating rate, respectively.
 % % The contribution of the prompt and delayed neutron is negligible.
-Peterson-Droogh and Howard \cite{peterson-droogh_current_2018} summarized in a paper the modeling techniques for the calculation of the heating rates and the activity of iridium-192 targets in the \gls*{HFIR} at the \gls*{ORNL}.
+Peterson-Droogh and Howard \cite{peterson-droogh_current_2018} summarized the modeling techniques for the calculation of the heating rates and the activity of iridium-192 targets in the \gls*{HFIR} at the \gls*{ORNL}.
 Their delayed heating calculation was separated into two methods.
 The first method was the PIKMT method, described later in this chapter, for obtaining the delayed gamma contribution from fission product decay.
-The second method calculated the delayed gamma contribution from activation product decay using a coupling of MCNP and ORIGEN.
+The second method calculated the delayed gamma contribution from activation product decay by coupling MCNP and ORIGEN.
 
 % Other applications of the formal 3-step process
 The dose rate evaluation of fusion reactor components is another common application of the formal 3-step process.
@@ -159,7 +159,7 @@ Other fusion reactor studies \cite{petrizzi_improvement_2001, palermo_shutdown_2
 % cited by noh_estimation_2008
 For fission reactors, Lee et al. \cite{lee_analysis_2008} used this method to calculate the delayed gamma contribution in the HANARO reactor.
 % Drawbacks
-Although the D1S method is simple, it is most reliable if the generated radionuclides have short half-lives \cite{noh_estimation_2018}.
+Although the D1S method is simple once the nuclear data is modified, it is most reliable when the generated radionuclides have short half-lives \cite{noh_estimation_2018}.
 
 % Different methods: PIKMT method
 The \textit{PIKMT} method has become predominant in the past few years for delayed gamma heating calculations.
@@ -213,7 +213,7 @@ This strategy determines the evolution of the material composition in the reacto
 Depletion solvers ignore the geometry of the system, which underscores the need for a transport solver.
 The transport solver generates geometry- and material-dependent parameters that the depletion solver relies on.
 The depletion solver then calculates the material compositions and returns this information to the transport solver, and a cyclical transfer of information occurs, as shown in Figure \ref{fig:trans-dep}.
-% After reactor shutdown, he material composition and the isotopes decay chain provide enough information to determine the energy distribution and emission probability of the photon decays.
+% After reactor shutdown, he material composition and the isotopes decay chain provide enough information to determine the energy distribution and emission probability of the photon decay.
 
 \begin{figure}[htbp!]
   \begin{center}
@@ -266,7 +266,7 @@ Furthermore, in most cases, the solver is up to several times faster due to not 
 % Motivation: ATR and active maintenance
 As mentioned in Chapter \ref{ch:intro}, this work intends to demonstrate the modeling capabilities of ATR.
 The physical configuration of ATR, shown in Figure \ref{fig:atr-view}, gives the reactor the unique capability to operate simultaneously at different power levels in the corner lobes.
-This feature allows for independent testing conditions within the same operating cycle for experiments located in different reactor regions \cite{atr}.
+This feature enables independent testing conditions within the same operating cycle for experiments located in different reactor regions \cite{atr}.
 
 \begin{figure}[htbp!]  % or H
   \begin{center}
@@ -286,18 +286,18 @@ Finally, continuous energy Monte Carlo depletion calculations have high computat
 
 % Conclusions
 Overall, a tool relying on ORIGEN (and CRAM) that can model ATR and has low computational requirements can fulfill this thesis' needs.
-The tool with all the desired capabilities is the \gls*{MOAA} tool \cite{fairhurst_development_2022}, which is described in detail in Chapter \ref{ch:delayedheat}.
+The tool with all the desired capabilities is MOAA \cite{fairhurst_development_2022}, which is described in detail in Chapter \ref{ch:delayedheat}.
 
 
 \section{Machine Learning}
 
 % Why is this necessary?
 As stated in Chapter \ref{ch:intro}, one of the objectives of this Ph.D. thesis is to accelerate the prediction of the bounding event outcome (capsule melts or does not melt).
-This method relies on multiple machine-learning algorithms.
+This method relies on multiple machine learning algorithms.
 This section of the thesis motivates the choice of the algorithms and describes them briefly.
 
 % Intro
-Machine learning is the branch of artificial intelligence that allows a computer algorithm to derive relationships from data.
+Machine learning is the branch of artificial intelligence that allows computer algorithms to derive relationships from data.
 This feature allows them to solve complex problems, while at the same time decreasing the calculations' computational expense.
 For example, the high computational expense of physics-based calculations makes them unsuitable for various applications, e.g., real-time reactor control.
 Even though the \gls*{HPC} capabilities have increased considerably in the past few decades, they are still not sufficient.
@@ -325,14 +325,14 @@ They demonstrated the system prediction module for a reactivity insertion event 
 
 % Predictive maintenance - Classification - SVM and Logistic regression - Nuclear Engineering and Technology
 Gohel et al. \cite{gohel_predictive_2020} developed a framework utilizing \gls*{SVM} and \gls*{LogR} for conducting predictive maintenance of \glspl*{NPP}.
-Predictive maintenance allows mitigating component failures and to increase the power plant availability.
+Predictive maintenance allows operators to mitigate component failures and to increase the power plant availability.
 Their framework intended to predict the failure of a power plant infrastructure in future cycles based on sensor real-time data.
 Due to the lack of real NPP data, the paper demonstrated the framework by applying it to the degradation of a turbofan engine.
 
 % Several - Nuclear Engineering and Design
 Blevins and Yang \cite{blevins_machine_2020} discussed the suitability of machine learning for manufacturing in nuclear engineering.
 Their article presented an overview and examples of applications of multiple machine learning techniques, such as \gls*{DTR}, \gls*{RFR}, \gls*{SVM}, \gls*{KNN}, and \glspl*{FNN}, to advanced manufacturing.
-As many of these algorithms have not been yet applied to advanced manufacturing in the nuclear engineering field, they extrapolated these methods from different engineering applications, including semiconductor doping, manufacturing defect detection, and additive manufacturing parameters' optimization, among others.
+As many of these algorithms have not been yet applied to advanced manufacturing in the nuclear engineering field, they extrapolated these methods from different engineering applications, including semiconductor doping, manufacturing defect detection, and additive manufacturing parameter optimization, among others.
 
 % Deep learning
 Additionally, deep-learning, which is a sub-field of machine learning, has also been applied to nuclear engineering problems.
@@ -349,7 +349,6 @@ This kind of study allows power plant personnel to determine the cause of anomal
 Erdogan and Melih \cite{erdogan_pwr_2003} developed an optimal loading algorithm for nuclear fuel based on an \gls*{FNN} and a genetic algorithm.
 Their algorithm searched for a loading pattern that minimized the initial amount of fuel and satisfied the reactor safety requirements.
 Overall, minimizing the use of fuel reduces the operational cost of the plant.
-
 % Optimization - ANNs - Annals of Nuclear Energy
 % Fernandes-Faria and Pereira, 2003 \cite{fernandes-faria_nuclear_2003} utilized an \gls{ANN} for minimizing the power peaking factor while maximizing the fuel burnup.
 % Control rod position - ANNs - Progress in Nuclear Energy
@@ -361,7 +360,6 @@ The neural network could guide that control rod calibration process as well, as 
 % Souza and Moreira, 2006 \cite{souza_neural_2006} applied ANNs to reactor protection systems.
 % Their paper intended to predict in real time the power peak factor based on the control rods position.
 % Reactor design ? - ANNs - Annals of Nuclear Energy
-
 Montes et al. \cite{montes_local_2009} applied FNNs to reactor fuel optimization.
 The network quickly determined the local power peaking factor in a \gls*{BWR} based on the distribution of fissile and burnable poison materials.
 The power peaking factor is a design parameter, and the ability to quickly estimate it reduces the fuel optimization time.
@@ -421,5 +419,5 @@ Overall, machine learning has been applied to different areas of nuclear enginee
 The numerous applications described here cover many algorithms that can be classified as traditional machine learning or deep-learning.
 This literature survey helps to understand the state of development of this field and can guide the choice of algorithms for this work.
 % problem at hand.
-However, machine learning has not been yet utilized in applications similar to this thesis'.
+However, machine learning has not been yet utilized in applications with similar objectives to this thesis'.
 Therefore, Chapter \ref{ch:tf} compares various algorithms performance and analyzes their suitability to this thesis.

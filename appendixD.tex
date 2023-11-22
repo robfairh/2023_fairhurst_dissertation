@@ -1,0 +1,8 @@
+\label{ap:mat_props_neut}
+
+\begin{longtable}{cccccc}%
+  \caption{Materials included in the ATR experiment model.} \\
+  \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
+  \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
+  {\\ \hline \Z & \symbol & \M & \rho & \A & \ai} % specify your coloumns here
+\end{longtable}

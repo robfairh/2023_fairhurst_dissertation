@@ -1,12 +1,12 @@
 \label{ch:database}
 
-This chapter investigates different methods to accelerate the delayed heating calculation for experiments of any given material composition.
+This chapter investigates different methods to accelerate the delayed heating calculation for experiments of arbitrary material composition.
 The most computationally expensive step in the delayed heating calculation is the neutron-transport simulation during experiment irradiation.
 This step determines the geometry-dependent parameters, i.e., total neutron flux, neutron spectrum, and reaction rates.
 Section \ref{sec:fast} introduces a \textit{fast calculation} method and investigates the possibility of avoiding the repeated run of the neutron-transport simulation to save on computational resources.
 
 Based on the fast calculation results, Section \ref{sec:irradatabase} introduces the \textit{Generic Irradiation Database} method and discusses the results of two applications.
-The first application verifies the generic irradiation database method for the simple demonstration exercise introduced in Section \ref{sec:demo}.
+The first application verifies the generic material irradiation database method for the simple demonstration exercise introduced in Section \ref{sec:demo}.
 The second application is the verification of the method for an ATR experiment.
 
 \section{Fast Calculation}
@@ -14,22 +14,24 @@ The second application is the verification of the method for an ATR experiment.
 
 This method solves the neutron-transport problem only once for a specific experiment material to obtain the geometry-dependent parameters.
 Then, these parameters are fixed and become the input to the rest of the delayed heating calculation workflow regardless of the experiment composition.
-The underlying assumption is that the experiment volume is small enough to perturb the neutron flux in the reactor, and that for all experiment materials the total neutron flux is approximately the same.
-As shown in Figure \ref{fig:atr-flux}, the total neutron flux in experiments of different chemical elements is bounded between 3.4 to 6.0 $\times$ 10$^{14} n/cm^2/s$.
+The depletion calculation utilizes these fixed parameters to obtain the charged particle heating and photon source intensity.
+The method underlying assumption is that the experiment volume is small enough to perturb the neutron flux in the reactor, and that for all experiment materials the neutron flux is approximately the same.
+% As shown in Figure \ref{fig:atr-flux}, the total neutron flux in experiments of different chemical elements is bounded between 3.4 to 6.0 $\times$ 10$^{14} n/cm^2/s$.
+As shown in Figure \ref{fig:atr-flux}, the total neutron flux in experiments of different chemical elements is bounded between 3.2 to 5.1 $\times$ 10$^{14} n/cm^2/s$.
 These results show that the total neutron flux in the experiment does not vary strongly and always remains in the same order of magnitude.
 As the first step of the delayed heating calculation obtains the neutron flux, fixing its value within the range shown in the figure may allow for a sufficiently accurate delayed heating calculation.
 
 \begin{figure}[htbp!]
   \begin{center}
-    \includegraphics[width=0.60\linewidth]{figures/atr-materials-flux}
+    \includegraphics[width=0.60\linewidth]{figures/demo-materials-flux}
   \end{center}
   \caption{Total neutron flux vs. atomic number of the experiment material.}
   \label{fig:atr-flux}
 \end{figure}
 
-As the neutron transport simulation must be run at least once to fix the geometry-dependent parameters, the question that remains unanswered is what experiment material should be chosen for the simulation.
+As the neutron-transport simulation must be run at least once to fix the geometry-dependent parameters, the question that remains unanswered is what experiment material should be chosen for the simulation.
 Two materials are studied: one that considerably perturbs the flux, which is 20\%-enriched uranium, and one that barely perturbs the flux, which is carbon.
-Although not shown here, when utilizing the geometry-dependent parameters from the neutron transport simulation for an experiment of uranium, the delayed heating results are not accurate.
+Although not shown here, when utilizing the geometry-dependent parameters from the neutron-transport simulation for an experiment of uranium, the delayed heating results are not accurate.
 That is because perturbing the reactor flux to obtain the fixed geometry-dependent parameters is not desirable as originally expected.
 When perturbing the flux, as the reactor power remains constant, the flux in the experiment increases, while the flux in the fuel assemblies decreases.
 Hence, the fuel assemblies are subject to a lower depletion, and consequently they produce a lower delayed gamma emission rate.
@@ -37,8 +39,8 @@ As a result, choosing carbon as the experiment material is more favorable becaus
 
 To better understand the effects of the geometry-dependent parameters on the delayed heating, this section presents a sensitivity analysis on some key magnitudes in the calculation workflow, i.e., the energy deposited by charged particles ($H_{ch}$) and the photon emission rate ($S_i$).
 The calculations use the demonstration exercise from Section \ref{sec:demo}.
-The reference calculation is based on the delayed heating calculation for an  experiment of arbitrary material, while the fast calculation uses the values from the neutron-transport simulation for the experiment of carbon.
-Figures \ref{fig:sens-al} to \ref{fig:sens-w} show a sensitivity analysis of the $H_{ch}$ and $S_i$ for different total flux levels.
+The reference calculation is based on the delayed heating calculation workflow for an  experiment of arbitrary material, while the fast calculation uses the values from the neutron-transport simulation for the experiment of carbon.
+Figures \ref{fig:sens-al} to \ref{fig:sens-w} show a sensitivity analysis of the $H_{ch}$ and $S_i$ for different total flux levels and selected experiment materials.
 These results show that the fast calculation overestimates the results for all cases.
 The overestimation for the experiment of aluminum is minimal, while the overestimation for other cases, such as the experiment of enriched uranium, is relatively large.
 
@@ -216,28 +218,44 @@ The next section introduces a different approach and investigates its suitabilit
 This section proposes the creation of a generic material irradiation database to decrease the burden of the delayed heating calculation in research reactor experiments.
 The database is created by utilizing the calculation workflow defined in Chapter \ref{ch:delayedheat} repeatedly to obtain the delayed heating in experiments composed of pure chemical elements.
 Nevertheless, an experiment is usually made of a mix of materials.
-Hence, this work establishes a method using the database to calculate the delayed heating in experiments of any material composition.
-This method allows obtaining results based on pre-computed values instead of re-doing the calculations.
+Hence, this work establishes a method using the database to calculate the delayed heating in experiments of arbitrary material composition.
+This method enables the delayed heating calculation based on pre-computed values instead of re-doing the calculations.
+
+% The following formula calculates the delayed heating in an experiment composed of several materials
+% \begin{align}
+% H_{j,M} &= \mathlarger{\sum}_i H_{j,i}(\rho_i)  \label{eq:data-1} \\
+% H_{j,i}(\rho_i) &= \rho_i f(\rho_i)  \label{eq:data-2} \\
+% f_{non-fiss}(\rho_i) &= H_{j,i}^o / \rho_i^o  \label{eq:data-3} \\
+% f_{fiss}(\rho_i) &= H_{j,i}^k / \rho_i^k  \label{eq:data-4}
+% \end{align}
+% where $H_{j, M}$ is the heating component $j$ of the mix and $\rho$ is the density.
+% The heating component $j$ could be either the charged particles, transported gammas, or total contributions.
+% $H_{j,i}$ and $\rho_i$ correspond to the heating values and density of material $i$ in the mix.
+% The formula contemplates two cases, fissile and non-fissile materials.
+% The calculation of $H_{j,i}(\rho_i)$ requires a functional form for $f(\rho_i)$, being constant for non-fissile (Eq. \ref{eq:data-3}) and density-dependent for fissile materials (Eq. \ref{eq:data-4}).
+% $H_{j,i}^o$ corresponds to the heating values for an experiment made of material $i$ only with a density value equal to its theoretical density $\rho_i^o$.
+% $H_{j,i}^k$ corresponds to the heating values for an experiment made of material $i$ only with a density value equal to $\rho_i^k$.
+% As $f_{fiss}$ is density-dependent, it requires multiple samples of $H_{i,j}^k/\rho_i^k$ for interpolating between adjacent values.
 
 The following formula calculates the delayed heating in an experiment composed of several materials
 \begin{align}
-H_{j,M} &= \mathlarger{\sum}_i H_{j,i}(\rho_i)  \label{eq:data-1} \\
-H_{j,i}(\rho_i) &= \rho_i f(\rho_i)  \label{eq:data-2} \\
-f_{non-fiss}(\rho_i) &= H_{j,i}^o / \rho_i^o  \label{eq:data-3} \\
-f_{fiss}(\rho_i) &= H_{j,i}^k / \rho_i^k  \label{eq:data-4}
+H_{j,M} &= \mathlarger{\sum}_i H_{j,i}(m_i)  \label{eq:data-1} \\
+H_{j,i}(m_i) &= m_i f(m_i)  \label{eq:data-2} \\
+f_{non-fiss}(m_i) &= H_{j,i}^o / m_i^o  \label{eq:data-3} \\
+f_{fiss}(m_i) &= H_{j,i}^k / m_i^k  \label{eq:data-4}
 \end{align}
-where $H_{j, M}$ is the heating component $j$ of the mix and $\rho$ is the density.
-The heating component $j$ could be either the charged particles, transported gammas, or total contributions.
-$H_{j,i}$ and $\rho_i$ correspond to the heating values and density of material $i$ in the mix.
-The formula contemplates two cases, fissile and non-fissile materials.
-The calculation of $H_{j,i}(\rho_i)$ requires a functional form for $f(\rho_i)$, being constant for non-fissile (Eq. \ref{eq:data-3}) and density-dependent for fissile materials (Eq. \ref{eq:data-4}).
-$H_{j,i}^o$ corresponds to the heating values for an experiment made of material $i$ only with a density value equal to its theoretical density $\rho_i^o$.
-$H_{j,i}^k$ corresponds to the heating values for an experiment made of material $i$ only with a density value equal to $\rho_i^k$.
-As $f_{fiss}$ is density-dependent, it requires multiple samples of $H_{i,j}^k/\rho_i^k$ for interpolating between adjacent values.
+where $H_{j, M}$ is the heating component $j$ of the mix, which could be either the charged particles, transported gammas, or total contributions.
+$H_{j,i}$ and $m_i$ correspond to the heating values and mass of material $i$ in the mix.
+The formula contemplates two cases: fissile and non-fissile materials.
+The calculation of $H_{j,i}(m_i)$ requires a functional form for $f(m_i)$, being constant for non-fissile (Equation \ref{eq:data-3}) and mass-dependent for fissile materials (Equation \ref{eq:data-4}).
+$H_{j,i}^o$ corresponds to the heating values for an experiment made of material $i$ and mass $m_i^o$, which is the mass of an experiment with density equal to the material's theoretical density $\rho_i^o$.
+$H_{j,i}^k$ corresponds to the heating values for an experiment made of material $i$ and mass $m_i^k$, which is an arbitrary value.
+As $f_{fiss}$ is mass-dependent, it requires multiple samples of $H_{i,j}^k/m_i^k$ for interpolating between adjacent values.
 
-% TODO
-% Need to talk about the combination of fissile materials
-% What results to show ?
+Because the Equations \ref{eq:data-2} to \ref{eq:data-4} consider a mass ratio, when the volume of the database and the experiment is the same, the mass ratio can be simplified into a density ratio.
+The following exercises consider this case, and the calculations are based on the experiment density instead of experiment mass.
+
+% TODO: Need to talk about the combination of fissile material. What results to show ?
 
 
 \subsection{Demonstration exercise}
@@ -251,24 +269,24 @@ The reactor regions considered contributing to the experiment heating are the fu
 % Results from 14-
 % Bronze
 The following analyses focus on the delayed heating calculation for a mix of materials.
-The first analysis considers an experiment of an arbitrary alloy, in this case, bronze, which is an alloy of copper and tin.
+The first analysis considers an experiment of an arbitrary alloy: bronze, which is an alloy of copper and tin.
 Bronze has a density of 8.73 g/cm$^3$, and the weight fractions are 88\% and 12\% for copper and tin, respectively.
-Table \ref{tab:demo-brz} summarizes the results.
-The results from the irradiation database method are based on the delayed heating of samples of pure copper (8.96 g/cm$^3$) and pure tin (5.75 g/cm$^3$).
+Table \ref{tab:demo-brz} summarizes the results for the energy deposited by charged particles ($H_{ch}$), energy deposited by photon transport ($H_{\gamma, Tr}$), and total heat deposited ($H_{T}$).
+The results from the generic material irradiation database method are based on the delayed heating of samples of pure copper (8.96 g/cm$^3$) and pure tin (5.75 g/cm$^3$).
 The calculated values coincide with the reference values.
 The relative difference for $H_{ch}$ is the largest, but it is still smaller than 5\%.
 
 \begin{table}[htbp!]
   \centering
-  \caption{Comparison of delayed heating for the irradiation database method and reference calculation for an experiment of bronze.}
+  \caption{Comparison of delayed heating for the generic material irradiation database method and reference calculation for an experiment of bronze.}
   \label{tab:demo-brz}
   \begin{tabular}{cccc}
     \toprule
                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Irradiation  database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
     \midrule
-    H$_{ch}$            & 15.54   & 16.24   & -4.31  \\
-    H$_{\gamma, Tr}$    & 49.75   & 50.17   & -0.84  \\
-    H$_{T}$             & 65.30   & 66.41   & -1.67  \\
+    $H_{ch}$            & 15.54   & 16.24   & -4.31  \\
+    $H_{\gamma, Tr}$    & 49.75   & 50.17   & -0.84  \\
+    $H_{T}$             & 65.30   & 66.41   & -1.67  \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -281,7 +299,7 @@ These values represent approximately 25, 50, 75, and 100\% of the theoretical de
 $H_{ch}$ represents less than 30\% and less than 2\% of $H_T$ for all densities for copper and tin, respectively.
 For copper, the slope formed between the first and last values are -24\%, -9\%, and -13\% for $H_{ch}$, $H_{\gamma, Tr}$, and $H_{T}$, respectively.
 For tin, the slope formed between the first and last values are -14\%, -16\%, and -16\% for $H_{ch}$, $H_{\gamma, Tr}$, and $H_{T}$, respectively.
-The methodology introduced in this paper considers $H_{j,i}/\rho_i$ to be constant for non-fissile materials (Eq. \ref{eq:data-3}).
+The methodology introduced in this paper considers $H_{j,i}/\rho_i$ to be constant for non-fissile materials, as described by Equation \ref{eq:data-3}.
 Although these curves have negative slopes, their magnitudes are relatively small, and as shown in Table \ref{tab:demo-brz}, a constant function still yields satisfactory results.
 
 % H/\rho for non-fissile material
@@ -297,27 +315,27 @@ The following exercise considers an experiment including a fissile material, ura
 This type of fuel has been extensively studied as one candidate accident tolerant fuel, due to its high thermal conductivity and high fissile element density \cite{un}.
 Table \ref{tab:demo-un} summarizes the results for an experiment of UN.
 The exercise adopts a 4\% enrichment for uranium.
-The results from the irradiation database correspond to the calculated value for uranium using a linear interpolation, while the contribution from nitrogen is considered negligible.
+The results from the generic material irradiation database correspond to the calculated value for uranium using a linear interpolation between database entries, while the contribution from nitrogen is considered negligible.
 $H_T$ is calculated by adding together $H_{ch}$ and $H_{\gamma,Tr}$.
 The relative difference of the results is less than 3\%, which confirms the choice of a linear interpolation to represent $f_{fiss}(\rho_i)$.
 
 \begin{table}[htbp!]
   \centering
-  \caption{Comparison of delayed heating for the irradiation database method and reference calculation for an experiment of uranium nitride.}
+  \caption{Comparison of delayed heating for the generic material irradiation database method and reference calculation for an experiment of UN.}
   \label{tab:demo-un}
   \begin{tabular}{cccc}
     \toprule
                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Irradiation database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
     \midrule
-    H$_{ch}$            & 273.1   & 267.0   &  2.3  \\
-    H$_{\gamma, Tr}$    & 233.7   & 236.0   & -0.9  \\
-    H$_{T}$             & 506.8   & 503.0   &  0.8  \\
+    $H_{ch}$            & 273.1   & 267.0   &  2.3  \\
+    $H_{\gamma, Tr}$    & 233.7   & 236.0   & -0.9  \\
+    $H_{T}$             & 506.8   & 503.0   &  0.8  \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 % UN, why it works
-The following analysis demonstrates why the inclusion of a fissile material into the mix requires multiple values to obtain $f_{fiss}$.
+The following analysis demonstrates why the inclusion of a fissile material into the mix requires a linear interpolation between database entries to obtain $f_{fiss}$.
 The exercise adopts the following uranium densities for the calculations: 1, 7, 13, and 19 g/cm$^3$.
 The UN has a density of 13.5 g/cm$^3$, and the atomic fraction is 50\% for both elements.
 Figure \ref{fig:H_rho2} displays $H_{j,i}/\rho_i$ as a function of $\rho$ for the experiment of uranium.
@@ -325,7 +343,6 @@ Only the values for the uranium are included because the delayed heating in a sa
 $H_{\gamma, Tr}/\rho$ is almost constant, while $H_{ch}/\rho$ decreases as the density increases.
 % % Quadratic function R^2: 0.99
 % % 0.07013153878082601 x^2 + -2.6293650151097636 x + 42.73063110509705
-Then, equation \ref{eq:data-4} calculates the delayed heating in the UN.
 
 \begin{figure}[htbp!] %or H 
     \centering
@@ -344,14 +361,14 @@ Zircaloy-4 is composed of Zr-1.5Sn-0.2Fe-0.1Cr, which is a similar composition t
 ZrNb is composed of Zr-2.5Nb, wherein the niobium increases the alloy's strength, and it is used in pressure tubes in CANDU reactors.
 %
 Table \ref{tab:demo-zircaloy} displays the results for the three zirconium alloys.
-The results from the irradiation database method are based on the delayed heating of samples of pure zirconium (7.13 g/cm$^3$), pure tin (5.75 g/cm$^3$), pure iron (7.87 g/cm$^3$), pure chromium (7.18 g/cm$^3$), pure nickel (8.90 g/cm$^3$), and pure niobium (8.57 g/cm$^3$).
+The results from the generic material irradiation database method are based on the delayed heating of samples of pure zirconium (7.13 g/cm$^3$), pure tin (5.75 g/cm$^3$), pure iron (7.87 g/cm$^3$), pure chromium (7.18 g/cm$^3$), pure nickel (8.90 g/cm$^3$), and pure niobium (8.57 g/cm$^3$).
 The reference calculation considers an experiment density of 6.56 g/cm$^3$, 6.56 g/cm$^3$, and 6.44 g/cm$^3$, for Zircaloy-2, Zircaloy-4, and ZrNb, respectively.
 The calculated values show good agreement with respect to the reference values.
 The relative difference for $H_{ch}$ is the largest for Zircaloy-2, while all the other relative differences are below 3\%.
 
 \begin{table}[htbp!]
   \centering
-  \caption{Comparison of delayed heating for the irradiation database method and reference calculation for multiple experiments.}
+  \caption{Comparison of delayed heating for the generic material irradiation database method and reference calculation for multiple experiments.}
   \label{tab:demo-zircaloy}
   \begin{tabular}{cccc}
     \toprule
@@ -359,45 +376,45 @@ The relative difference for $H_{ch}$ is the largest for Zircaloy-2, while all th
     \midrule
     \multicolumn{4}{c}{Zircaloy-2}                    \\
     \midrule
-    H$_{ch}$            &  0.19   &  0.18   &  5.84   \\
-    H$_{\gamma, Tr}$    & 38.42   & 38.39   &  0.07   \\
-    H$_{T}$             & 38.61   & 38.57   &  0.10   \\
+    $H_{ch}$            &  0.19   &  0.18   &  5.84   \\
+    $H_{\gamma, Tr}$    & 38.42   & 38.39   &  0.07   \\
+    $H_{T}$             & 38.61   & 38.57   &  0.10   \\
     \midrule
     \multicolumn{4}{c}{Zircaloy-4}                    \\
     \midrule
-    H$_{ch}$            &  0.19   &  0.19   &  1.48   \\
-    H$_{\gamma, Tr}$    & 38.42   & 38.40   &  0.06   \\
-    H$_{T}$             & 38.61   & 38.58   &  0.06   \\
+    $H_{ch}$            &  0.19   &  0.19   &  1.48   \\
+    $H_{\gamma, Tr}$    & 38.42   & 38.40   &  0.06   \\
+    $H_{T}$             & 38.61   & 38.58   &  0.06   \\
     \midrule
     \multicolumn{4}{c}{ZrNb}                          \\
     \midrule
-    H$_{ch}$            &  0.19   &  0.19   &  2.49   \\
-    H$_{\gamma, Tr}$    & 37.66   & 37.72   & -0.15   \\
-    H$_{T}$             & 37.85   & 37.91   & -0.14   \\
+    $H_{ch}$            &  0.19   &  0.19   &  2.49   \\
+    $H_{\gamma, Tr}$    & 37.66   & 37.72   & -0.15   \\
+    $H_{T}$             & 37.85   & 37.91   & -0.14   \\
     \midrule
     \multicolumn{4}{c}{U(nat)-Mo}                     \\
     \midrule
-    H$_{ch}$            & 135.38   & 132.31  &  2.32  \\
-    H$_{\gamma, Tr}$    & 196.06   & 191.66  &  2.30  \\
-    H$_{T}$             & 331.44   & 323.97  &  2.31  \\
+    $H_{ch}$            & 135.38   & 132.31  &  2.32  \\
+    $H_{\gamma, Tr}$    & 196.06   & 191.66  &  2.30  \\
+    $H_{T}$             & 331.44   & 323.97  &  2.31  \\
     \midrule
     \multicolumn{4}{c}{U(nat)-Nb}                     \\
     \midrule
-    H$_{ch}$            & 129.13   & 127.35  &  1.39  \\
-    H$_{\gamma, Tr}$    & 187.82   & 183.92  &  2.12  \\
-    H$_{T}$             & 316.94   & 311.27  &  1.82  \\
+    $H_{ch}$            & 129.13   & 127.35  &  1.39  \\
+    $H_{\gamma, Tr}$    & 187.82   & 183.92  &  2.12  \\
+    $H_{T}$             & 316.94   & 311.27  &  1.82  \\
     \midrule
     \multicolumn{4}{c}{U(20\%)3Si2Al}                 \\
     \midrule
-    H$_{ch}$            & 254.96   & 247.48  &  3.02  \\
-    H$_{\gamma, Tr}$    &  95.75   & 108.88  &-12.05  \\
-    H$_{T}$             & 350.71   & 356.35  & -1.58  \\
+    $H_{ch}$            & 254.96   & 247.48  &  3.02  \\
+    $H_{\gamma, Tr}$    &  95.75   & 108.88  &-12.05  \\
+    $H_{T}$             & 350.71   & 356.35  & -1.58  \\
     \midrule
     \multicolumn{4}{c}{Tungsten alloy}    \\
     \midrule
-    H$_{ch}$            &  21.35   &  22.52  & -5.22  \\
-    H$_{\gamma, Tr}$    & 129.20   & 132.33  & -2.37  \\
-    H$_{T}$             & 150.54   & 154.85  & -2.78  \\
+    $H_{ch}$            &  21.35   &  22.52  & -5.22  \\
+    $H_{\gamma, Tr}$    & 129.20   & 132.33  & -2.37  \\
+    $H_{T}$             & 150.54   & 154.85  & -2.78  \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -413,11 +430,11 @@ The third experiment is composed of U$_3$Si$_2$/Al, which is a typical material 
 Table \ref{tab:demo-zircaloy} displays the results for the experiments containing uranium.
 
 The calculations consider a natural uranium composition for the experiments of UMo and UNb and a 20\%-enriched uranium for the experiment of U$_3$Si$_2$/Al.
-The results from the irradiation database method are based on the delayed heating of samples of pure uranium, pure molybdenum, pure niobium, pure silicon, and pure aluminum.
+The results from the generic material irradiation database method are based on the delayed heating of samples of pure uranium, pure molybdenum, pure niobium, pure silicon, and pure aluminum.
 The exercise adopts the following uranium densities for the calculations: 1, 7, 13, and 19 g/cm$^3$.
 For molybdenum, niobium, silicon, and aluminum, the exercise uses densities of 10.22, 8.57, 2.33, and 2.70 g/cm$^3$, respectively.
 The reference calculation considers an experiment density of 17.35, 16.51, and 5.76 g/cm$^3$, for UMo, UNb, and U$_3$Si$_2$/Al, respectively.
-Most of the calculated values show good agreement with respect to the reference values, showing relative differences below 3\%, except H$_{ch}$ and H$_{\gamma, Tr}$ for U$_3$Si$_2$/Al.
+Most of the calculated values show good agreement with respect to the reference values, showing relative differences below 3\%, except $H_{ch}$ and $H_{\gamma, Tr}$ for U$_3$Si$_2$/Al.
 The latter shows a relative difference of approximately 12\%, but as the charged particles have a larger contribution to the heating, the total heat is within 2\% of the reference value.
 
 % Tungsten alloy
@@ -429,7 +446,7 @@ The alloy composition considered in this work is W-3.5Ni-1.5Fe.
 %
 Table \ref{tab:demo-zircaloy} displays the results for this alloy.
 The calculated values show good agreement with respect to the reference values.
-The largest relative difference is for H$_{ch}$, being around 5\%, while the rest of the relative differences are within 3\%.
+The largest relative difference is for $H_{ch}$, being around 5\%, while the rest of the relative differences are within 3\%.
 % The largest contribution to the delayed heating comes from the gamma particles.
 
 % % FeCrAl
@@ -444,7 +461,7 @@ The largest relative difference is for H$_{ch}$, being around 5\%, while the res
 % Table \ref{tab:demo-FeCrAl} displays the results for these two alloys.
 % The results from the database method are based on the delayed heating of samples of pure Fe ($\rho_{Fe}$ = 7.87 g/cm$^3$), pure Cr ($\rho_{Cr}$ = 7.18 g/cm$^3$), and pure Al ($\rho_{Al}$ = 2.70 g/cm$^3$).
 % The reference calculations consider an experiment density of 8 g/cm$^3$ for both alloys.
-% The calculated values for H$_{\gamma, Tr}$ and H$_{T}$ show good agreement with respect to the reference values.
+% The calculated values for $H_{\gamma, Tr}$ and $H_{T}$ show good agreement with respect to the reference values.
 % The relative difference for $H_{ch}$ is the largest, being approximately 23\% for the first alloy.
 % Because the material is not highly activated, this large relative difference does not affect the total heat deposition, having a relative difference below 1\%.
 
@@ -457,13 +474,13 @@ The largest relative difference is for H$_{ch}$, being around 5\%, while the res
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{70\% Fe, 22\% Cr, 8\% Al}      \\
-%     H$_{ch}$            &  0.82   &  0.67   & 22.77   \\
-%     H$_{\gamma, Tr}$    & 42.23   & 42.00   &  0.56   \\
-%     H$_{T}$             & 43.06   & 42.67   &  0.91   \\
+%     $H_{ch}$            &  0.82   &  0.67   & 22.77   \\
+%     $H_{\gamma, Tr}$    & 42.23   & 42.00   &  0.56   \\
+%     $H_{T}$             & 43.06   & 42.67   &  0.91   \\
 %     \multicolumn{4}{c}{86\% Fe, 10\% Cr, 4\% Al}      \\
-%     H$_{ch}$            &  0.43   &  0.35   & 21.24   \\
-%     H$_{\gamma, Tr}$    & 42.20   & 42.09   &  0.27   \\
-%     H$_{T}$             & 42.63   & 42.45   &  0.44   \\
+%     $H_{ch}$            &  0.43   &  0.35   & 21.24   \\
+%     $H_{\gamma, Tr}$    & 42.20   & 42.09   &  0.27   \\
+%     $H_{T}$             & 42.63   & 42.45   &  0.44   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -476,7 +493,7 @@ The largest relative difference is for H$_{ch}$, being around 5\%, while the res
 % Table \ref{tab:demo-RAFM} displays the results for this alloy.
 % The results from the database method are based on the delayed heating of samples of pure Fe ($\rho_{Fe}$ = 7.87 g/cm$^3$), pure Cr ($\rho_{Cr}$ = 7.18 g/cm$^3$), pure W ($\rho_{W}$ = 19.3 g/cm$^3$), pure V ($\rho_{V}$ = 6.11 g/cm$^3$), and pure Ta ($\rho_{Ta}$ = 16.654 g/cm$^3$).
 % The reference calculations consider an experiment density of 7.80 g/cm$^3$ for the alloy.
-% The calculated values for H$_{\gamma, Tr}$ and H$_{T}$ show good agreement with respect to the reference values.
+% The calculated values for $H_{\gamma, Tr}$ and $H_{T}$ show good agreement with respect to the reference values.
 % The relative difference for $H_{ch}$ is the largest, being approximately 53\%.
 % Because the material is not highly activated, this large relative difference does not affect the total heat deposition, having a relative difference below 2\%.
 
@@ -489,9 +506,9 @@ The largest relative difference is for H$_{ch}$, being around 5\%, while the res
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{RAFM}         \\
-%     H$_{ch}$            &  0.34   &  0.73   & -53.31  \\
-%     H$_{\gamma, Tr}$    & 41.27   & 41.70   &  -1.04  \\
-%     H$_{T}$             & 41.61   & 42.43   &  -1.94  \\
+%     $H_{ch}$            &  0.34   &  0.73   & -53.31  \\
+%     $H_{\gamma, Tr}$    & 41.27   & 41.70   &  -1.04  \\
+%     $H_{T}$             & 41.61   & 42.43   &  -1.94  \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -521,7 +538,7 @@ Section \ref{sec:atrexp} provides more details of the model and modeling assumpt
 % representative time for the entire cycle is more conservative, as demonstrated in Fig. 13, than
 % previous heating calculations [5] performed with fresh fuel and control elements withdrawn at 22 in.
 % The heating rate results at MOC_15 are interpreted to be the average heating rate for the entire cycle.
-The generic irradiation database is based on the delayed heating calculation for the \gls*{MOC} values, which is a conservative approach \cite{ilas_impact_2013}.
+The generic material irradiation database is based on the delayed heating calculation for the \gls*{MOC} values, which is a conservative approach \cite{ilas_impact_2013}.
 Each ATR power cycle typically lasts for 40 to 60 days \cite{sterbentz_agr1_2018}, and this work considers an irradiation time of 30 days.
 
 % % The following will not be shown... I think ...
@@ -591,7 +608,7 @@ $H_{ch}(\rho)$ is close to zero for densities smaller than 5 g/cm$^3$, has an in
     \caption{$H_j(\rho)$.}
   \end{subfigure}
   \hfill
-  \caption{Generic irradiation database values for the ATR A1 experiment position.}
+  \caption{Generic material irradiation database values for the ATR A1 experiment position.}
   \label{fig:atr-data}
 \end{figure}
 
@@ -622,17 +639,17 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{Zircaloy-2}                        \\
-%     H$_{ch}$            &    2.95   &    2.96   & -0.10   \\
-%     H$_{\gamma, Tr}$    & 2357.88   & 2345.41   &  0.53   \\
-%     H$_{T}$             & 2360.83   & 2348.37   &  0.53   \\
+%     $H_{ch}$            &    2.95   &    2.96   & -0.10   \\
+%     $H_{\gamma, Tr}$    & 2357.88   & 2345.41   &  0.53   \\
+%     $H_{T}$             & 2360.83   & 2348.37   &  0.53   \\
 %     \multicolumn{4}{c}{Zircaloy-4}                        \\
-%     H$_{ch}$            &    2.95   &    2.96   & -0.29   \\
-%     H$_{\gamma, Tr}$    & 2357.86   & 2345.63   &  0.52   \\
-%     H$_{T}$             & 2360.82   & 2348.59   &  0.52   \\
+%     $H_{ch}$            &    2.95   &    2.96   & -0.29   \\
+%     $H_{\gamma, Tr}$    & 2357.86   & 2345.63   &  0.52   \\
+%     $H_{T}$             & 2360.82   & 2348.59   &  0.52   \\
 %     \multicolumn{4}{c}{ZrNb}                              \\
-%     H$_{ch}$            &    2.99   &    3.31   & -9.75   \\
-%     H$_{\gamma, Tr}$    & 2307.60   & 2314.60   & -0.30   \\
-%     H$_{T}$             & 2310.59   & 2317.92   & -0.32   \\
+%     $H_{ch}$            &    2.99   &    3.31   & -9.75   \\
+%     $H_{\gamma, Tr}$    & 2307.60   & 2314.60   & -0.30   \\
+%     $H_{T}$             & 2310.59   & 2317.92   & -0.32   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -644,7 +661,7 @@ Additionally, it is stress corrosion cracking resistant and irradiation induced 
 The typical content ranges from 10 to 22\% for chromium, and from 4 to 8\% for aluminum.
 Figure \ref{fig:atr-time-fecral} presents the experiment heat production over time in the experiment of FeCrAl.
 The reference curve is for an experiment of FeCrAl with a density of 8 g/cm$^3$ and the following composition Fe-22Cr-8Al.
-The calculated curve corresponds to the results from the irradiation database method and are based on the delayed heating of samples of pure iron (7.87 g/cm$^3$), pure chromium (7.18 g/cm$^3$), and pure aluminum (2.70 g/cm$^3$).
+The calculated curve corresponds to the results from the generic material irradiation database method and are based on the delayed heating of samples of pure iron (7.87 g/cm$^3$), pure chromium (7.18 g/cm$^3$), and pure aluminum (2.70 g/cm$^3$).
 The delayed heating is 2.38 kW 1 second after shutdown, which is less than 0.01\% of the total power during operation, and it decays below 500 W within 2 hours.
 The calculated curve shows good agreement with the reference curve, having a relative difference smaller than 1\%.
 
@@ -666,13 +683,13 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{70\% Fe, 22\% Cr, 8\% Al}         \\
-%     H$_{ch}$            &   14.87  &   12.21   & 21.80   \\
-%     H$_{\gamma, Tr}$    & 2369.97  & 2358.40   &  0.49   \\
-%     H$_{T}$             & 2384.84  & 2370.62   &  0.60   \\
+%     $H_{ch}$            &   14.87  &   12.21   & 21.80   \\
+%     $H_{\gamma, Tr}$    & 2369.97  & 2358.40   &  0.49   \\
+%     $H_{T}$             & 2384.84  & 2370.62   &  0.60   \\
 %     \multicolumn{4}{c}{86\% Fe, 10\% Cr, 4\% Al}         \\
-%     H$_{ch}$            &    7.57  &    6.24   & 21.39   \\
-%     H$_{\gamma, Tr}$    & 2374.85  & 2367.56   &  0.31   \\
-%     H$_{T}$             & 2382.42  & 2372.80   &  0.36   \\
+%     $H_{ch}$            &    7.57  &    6.24   & 21.39   \\
+%     $H_{\gamma, Tr}$    & 2374.85  & 2367.56   &  0.31   \\
+%     $H_{T}$             & 2382.42  & 2372.80   &  0.36   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -704,17 +721,17 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{U(nat)-Mo}         \\
-%     H$_{ch}$            &  3507.04   &  3416.95  &  2.64   \\
-%     H$_{\gamma, Tr}$    &  7780.91   &  7358.50  &  5.74   \\
-%     H$_{T}$             & 11287.95   & 10775.45  &  4.76   \\
+%     $H_{ch}$            &  3507.04   &  3416.95  &  2.64   \\
+%     $H_{\gamma, Tr}$    &  7780.91   &  7358.50  &  5.74   \\
+%     $H_{T}$             & 11287.95   & 10775.45  &  4.76   \\
 %     \multicolumn{4}{c}{U(nat)-Nb}         \\
-%     H$_{ch}$            &  3345.27   &  3306.49  &  1.17   \\
-%     H$_{\gamma, Tr}$    &  7592.19   &  7156.94  &  6.08   \\
-%     H$_{T}$             & 10937.46   & 10463.43  &  4.53   \\
+%     $H_{ch}$            &  3345.27   &  3306.49  &  1.17   \\
+%     $H_{\gamma, Tr}$    &  7592.19   &  7156.94  &  6.08   \\
+%     $H_{T}$             & 10937.46   & 10463.43  &  4.53   \\
 %     \multicolumn{4}{c}{U(20\%)3Si2Al}     \\
-%     H$_{ch}$            &  7783.68   &  7527.87  &  3.40   \\
-%     H$_{\gamma, Tr}$    &  4690.24   &  4830.27  & -2.90   \\
-%     H$_{T}$             & 12473.92   & 12358.14  & -0.94   \\
+%     $H_{ch}$            &  7783.68   &  7527.87  &  3.40   \\
+%     $H_{\gamma, Tr}$    &  4690.24   &  4830.27  & -2.90   \\
+%     $H_{T}$             & 12473.92   & 12358.14  & -0.94   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -747,9 +764,9 @@ The calculated curve shows good agreement with the reference curve, having a rel
 % %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 % %     \midrule
 % %     \multicolumn{4}{c}{Bronze}        \\
-% %     H$_{ch}$            &  229.95   &  237.10  & -3.02  \\
-% %     H$_{\gamma, Tr}$    & 2743.96   & 2754.34  & -0.38  \\
-% %     H$_{T}$             & 2973.91   & 2991.44  & -0.59  \\
+% %     $H_{ch}$            &  229.95   &  237.10  & -3.02  \\
+% %     $H_{\gamma, Tr}$    & 2743.96   & 2754.34  & -0.38  \\
+% %     $H_{T}$             & 2973.91   & 2991.44  & -0.59  \\
 % %     \bottomrule
 % %   \end{tabular}
 % % \end{table}
@@ -763,9 +780,9 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{SiC}        \\
-%     H$_{ch}$            &    2.25  &    2.28  & -1.31  \\
-%     H$_{\gamma, Tr}$    &  958.36  &  939.10  &  2.05  \\
-%     H$_{T}$             &  960.60  &  941.38  &  2.04  \\
+%     $H_{ch}$            &    2.25  &    2.28  & -1.31  \\
+%     $H_{\gamma, Tr}$    &  958.36  &  939.10  &  2.05  \\
+%     $H_{T}$             &  960.60  &  941.38  &  2.04  \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -779,9 +796,9 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{SS}        \\
-%     H$_{ch}$            &   54.70  &   57.28  &  -4.51  \\
-%     H$_{\gamma, Tr}$    & 2401.44  & 2402.40  &  -0.04  \\
-%     H$_{T}$             & 2456.14  & 2459.68  &  -0.14  \\
+%     $H_{ch}$            &   54.70  &   57.28  &  -4.51  \\
+%     $H_{\gamma, Tr}$    & 2401.44  & 2402.40  &  -0.04  \\
+%     $H_{T}$             & 2456.14  & 2459.68  &  -0.14  \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -795,9 +812,9 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{95\%-W, 3.5\%-Ni, 1.5\%-Fe}      \\ % Double check the composition
-%     H$_{ch}$            &  310.55  &  329.49  & -5.75   \\
-%     H$_{\gamma, Tr}$    & 5463.04  & 5671.29  & -3.67   \\
-%     H$_{T}$             & 5773.59  & 6000.78  & -3.79   \\
+%     $H_{ch}$            &  310.55  &  329.49  & -5.75   \\
+%     $H_{\gamma, Tr}$    & 5463.04  & 5671.29  & -3.67   \\
+%     $H_{T}$             & 5773.59  & 6000.78  & -3.79   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -811,9 +828,9 @@ The calculated curve shows good agreement with the reference curve, having a rel
 %                     & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Database\\method [W]\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Reference\\calculation [W]\end{tabular}} & Rel. Diff [\%] \\
 %     \midrule
 %     \multicolumn{4}{c}{RAFM}         \\
-%     H$_{ch}$            &    9.01  &   12.66  & -28.83   \\
-%     H$_{\gamma, Tr}$    & 2381.76  & 2369.79  &   0.51   \\
-%     H$_{T}$             & 2390.77  & 2382.45  &   0.35   \\
+%     $H_{ch}$            &    9.01  &   12.66  & -28.83   \\
+%     $H_{\gamma, Tr}$    & 2381.76  & 2369.79  &   0.51   \\
+%     $H_{T}$             & 2390.77  & 2382.45  &   0.35   \\
 %     \bottomrule
 %   \end{tabular}
 % \end{table}
@@ -829,13 +846,13 @@ This chapter studies two methods using previous knowledge to expedite the proces
 First, the chapter investigates the feasibility of reducing the calculation burden by solving the neutron-transport problem only once.
 This fast method utilizes the geometry-dependent parameters from the neutron-transport problem for an experiment of carbon, which is a material that does not considerably perturb the neutron flux.
 Then, the depletion calculation utilizes these parameters to obtain the charged particle heating and photon source intensity.
-Some cases are studied for selected materials and the results compared to the delayed heating calculation results.
+Some cases are studied for selected materials and the results compared to the results obtained with the delayed heating calculation workflow.
 The results show that the fast calculation is accurate for some cases while excessively conservative for others.
 Additionally, the study concludes that this approach is not suitable to this thesis' objectives and that neutron-transport simulations cannot be avoided.
 
-Second, this chapter also describes the irradiation database method, which relies on the delayed heating calculation to obtain the heat produced in experiments of individual chemical elements and through their combination calculate the heat produced in experiments of any material composition.
+Second, this chapter also describes the generic material irradiation database method, which relies on the delayed heating calculation to obtain the heat produced in experiments of individual chemical elements and through their combination calculate the heat produced in experiments of arbitrary material composition.
 % Results
-Finally, this chapter demonstrates the generic irradiation database method by presenting two exercises.
+Finally, this chapter demonstrates the generic material irradiation database method by presenting two exercises.
 These exercises include the delayed heating calculation of experiments for a demonstration exercise and ATR.
 The results verify the method by showing a wide variety of combinations of materials that could integrate a research reactor experiment.
 Additionally, for the case of the ATR exercise, the heat production over time is shown for several experiments.

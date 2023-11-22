@@ -17,19 +17,19 @@ The user-defined cell for the calculations is cell number $1$ of the MCNP input 
 
 
 \section{ATR case}
-\label{sec:atr}
+\label{sec:ap-atr}
 
 % ATR input file
 The required settings within the irradiation cases include an MCNP input file, an irradiation time, an irradiation power divided into five lobe powers: NW, NE, C, SW, SE.
 Additionally, the user must provide the F7 tally identification number that will be used for adjusting the lobe powers.
 
-Listing \ref{uif2} displays a typical UIF for an ATR irradiation experiment.
+Listing \ref{uif2} displays a typical UIF for an ATR experiment.
 This application includes a single irradiation case, two decay times, and 1800 cells (only four are shown).
 The irradiation case geometry and material definition are specified by the MCNP input file \texttt{ne71a.i1}, with an irradiation duration of 3 days, and a total reactor power of 120 MW, which is subdivided into five reactor lobes.
 The irradiation period is followed by a decay of 12 hours.
 The user-defined cells for the calculations are cells number $501101$, $501102$, $508459$, and $508460$ of the MCNP input file.
 Finally, the adjusted lobe power calculation relies on tally number $7$.
-\lstinputlisting[language=xml, caption={Example of a typical MOAA UIF for an ATR irradiation experiment.}, label={uif2}, captionpos=b, xleftmargin=18pt]{./moaa-input-atr.xml}
+\lstinputlisting[language=xml, caption={Example of a typical MOAA UIF for an ATR experiment.}, label={uif2}, captionpos=b, xleftmargin=18pt]{./moaa-input-atr.xml}
 
 
 \section{Executing MOAA}
@@ -54,8 +54,7 @@ These arguments include the definition of a non-default output directory, a non-
 During the execution of MOAA, the generation and execution of the SCALE input files, as well as the parsing of the SCALE output file, occurs concurrently.
 % Definition of concurrent (concurrent != parallel)
 % Instead, a process might start, then once it's waiting on a specific instruction to finish, switch to a new task, only to come back once it's no longer waiting.
-MOAA relies on the Python standard library \textit{Asyncio}, which is the foundation for Python asynchronous frameworks, allowing for the creation and execution of co-routines.
-This feature allows for an overall reduction in the run times.
+MOAA relies on the Python standard library \textit{asyncio}, which is the foundation for Python asynchronous frameworks, allowing for the creation and execution of co-routines and an overall reduction in the run times.
 
 
 \section{Simulation output}
@@ -83,7 +82,7 @@ An example of such visualization using the isotopic composition of the input fil
   \begin{center}
     \includegraphics[scale=0.60]{figures/test1_grams}
   \end{center}
-  \caption{Example of an output processing with \textit{matplotlib}. Only the ten largest contributors to the total mass are displayed.}
+  \caption{Example of an output processing with \textit{matplotlib} for an experiment of UO$_2$ after a one day irradiation (in blue) and one day decay (in orange). Only the ten largest contributors to the total mass are displayed.}
   \label{fig:output-ex}
 \end{figure}
 

@@ -19,7 +19,7 @@ If neutron and photon geometries are identical, the user must provide number of 
 
 % Execution
 The execution of the workflow can be either interactive or batch mode from the command line by simply running \texttt{run\_case.py}.
-An example of a submission script for execution on an \gls*{HPC} cluster can be found in Appendix \ref{ref:moaa-exec}, where instead of running MOAA, the user would run \texttt{run\_case.py}.
+An example of a submission script for execution on an \gls*{HPC} cluster can be found in Appendix \ref{ref:moaa-exec}, where instead of running MOAA, the user should run \texttt{run\_case.py}.
 % Output
 Upon successful execution, a \textit{.csv} is created summarizing the results.
 The information is organized into rows and columns, where each row represents a decay step after shutdown, while each column contains the energy deposited by charged particles ($H_{ch}$), the energy deposited by photons ($H_{\gamma, Tr}$), and the total delayed heat ($H_T$), to mention a few.
@@ -31,29 +31,29 @@ The information is organized into rows and columns, where each row represents a 
 This work implements three different ways of calculating the delayed photon heating ($H_{\gamma, Tr}$):
 
 \noindent
-\textbf{First Method:} Runs one photon transport simulation for each cell contributing to the gamma heating.
-For a system composed by $N$ cells, the method obtains the contribution of each cell independently ($^* \! F8_i$), and running $N$ simulations calculates the total gamma heating:
+\textbf{First Method:} Runs one photon-transport simulation for each cell contributing to the gamma heating.
+For a system composed by $N$ cells, the method obtains the contribution of each cell independently using the energy deposition tally $EDT_i$, and running $N$ simulations calculates the total gamma heating:
 \begin{align}
-H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \mathlarger{\sum}_{i \in N} \: ^* \! F8_i \times S_i
+H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \mathlarger{\sum}_{i \in N} EDT_i \; [MeV] \times S_i
 \end{align}
 
 \noindent
-\textbf{Second Method:} Obtains all contributions to the gamma heating of all cells simultaneously ($^* \! F8$), and then calculates the total gamma heating:
+\textbf{Second Method:} Obtains all contributions to the gamma heating of all cells simultaneously using the energy deposition tally $EDT$, and then calculates the total gamma heating:
 \begin{align}
-H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \: ^* \! F8 \times \mathlarger{\sum}_{i \in N} S_i
+H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times EDT \; [MeV] \times \mathlarger{\sum}_{i \in N} S_i
 \end{align}
 
 \noindent
 \textbf{Third Method:} Splits the calculation into $M$ simulations ($M < N$).
 Each simulation includes $N_i$ cells ($N_i < N$).
-The method calculates the contribution to the gamma heating of $N_i$ cells simultaneously ($^* \! F8_i$), and then calculates the total gamma heating:
+The method calculates the contribution to the gamma heating of $N_i$ cells simultaneously using the energy deposition tally $EDT_i$, and then calculates the total gamma heating:
 \begin{align}
-H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \mathlarger{\sum}_{i \in M} \left[ \: ^* \! F8_i \times \mathlarger{\sum}_{j \in N_i} S_j \right]
+H_{\gamma, Tr} [W] &= 1.6022 \times 10^{-13} \times \mathlarger{\sum}_{i \in M} \left[ EDT_i \; [MeV] \times \mathlarger{\sum}_{j \in N_i} S_j \right]
 \end{align}
 
-
+In this work, $EDT$ corresponds to the $^\ast$F8 tally in MCNP.
 The first method runs $N$ photon-transport simulations, and in terms of computational expense, it is the most expensive.
-However, this method allows to compare the magnitude of the different gamma heating contributors.
+However, this method can quantify the magnitude of the different gamma heating contributors.
 Additionally, each individual fixed-source simulation is completed in a matter of seconds.
 Only when a system comprises a large number of cells, then, the computational expense becomes restrictive.
 
@@ -67,7 +67,7 @@ To define the enclosing volume, MCNP uses the SI$_i$ card, for which $i$ is rest
 Our method defines additional SI cards to sample the cell where the particle is born and the energy of the particle for each cell.
 If the enclosing volume is a box, it requires three additional SI cards for the position and one for the energy for each cell.
 Overall, MCNP can sample the photon particles in only 248 cells within one input file, if the enclosing volumes are boxes or cylinders.
-This reason motivated the development of the third method, which still allows to compute the total gamma heating with a considerably low computational expense.
+This reason motivated the development of the third method, which computes the total gamma heating with a considerably lower computational expense than the first method.
 
 Figure \ref{fig:atr-time2} displays the experiment heat production over time.
 $H_{\gamma,Tr}$ was calculated for 761 and 4 independent photon-transport simulations.
