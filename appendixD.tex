@@ -1,8 +1,27 @@
 \label{ap:mat_props_neut}
 
+% \begin{table}[htbp!]
+%   \caption{Materials included in the ATR experiment model.}
+%   \begin{tabular}{cccccc}%
+%     \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
+%     \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
+%     {\\ \hline \Z & \symbol & \M & \rho & \A & \ai} % specify your coloumns here
+%   \end{tabular}
+% \end{table}
+
+% \begin{longtable}{cccccc}%
+%   \caption{Materials included in the ATR experiment model.} \\
+%   \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
+%   \endhead
+%   \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
+%   {\\ \hline \Z & \symbol & \M & \rho & \A & \ai} % specify your coloumns here
+% \end{longtable}
+
 \begin{longtable}{cccccc}%
-  \caption{Materials included in the ATR experiment model.} \\
+  \caption{Materials included in the ATR experiment model.} \\ \hline
   \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
+  \\ \hline
+  \endhead
   \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
-  {\\ \hline \Z & \symbol & \M & \rho & \A & \ai} % specify your coloumns here
+  {\Z & \symbol & \M & \rho & \A & \ai \\ \hline} % specify your coloumns here
 \end{longtable}

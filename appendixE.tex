@@ -1,14 +1,28 @@
 \label{ap:mat_props}
 
-% \begin{tabular}{lccccc}%
+% \begin{table}[htbp!]
+%   \caption{Materials included in the ATR experiment model.}
+%   \begin{tabular}{lccccc}%
+%     \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] % specify table head
+%     \csvreader[head to column names]{thermalpropertiesv3b.csv}{} % use head of csv as column names
+%     {\\ \hline \material & \Z & \symbol & \rho & \k & \cp} % specify your coloumns here
+%   \end{tabular}
+% \end{table}
+
+% \begin{longtable}{lccccc}%
+%   \caption{Materials included in the ATR experiment model.} \\ \hline
 %   \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] % specify table head
+%   \\ \hline
+%   \endhead
 %   \csvreader[head to column names]{thermalpropertiesv3b.csv}{} % use head of csv as column names
 %   {\\ \hline \material & \Z & \symbol & \rho & \k & \cp} % specify your coloumns here
-% \end{tabular}
+% \end{longtable}
 
 \begin{longtable}{lccccc}%
-  \caption{Materials included in the ATR experiment model.} \\
+  \caption{Materials included in the ATR experiment model.} \\ \hline
   \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] % specify table head
+  \\ \hline
+  \endhead
   \csvreader[head to column names]{thermalpropertiesv3b.csv}{} % use head of csv as column names
-  {\\ \hline \material & \Z & \symbol & \rho & \k & \cp} % specify your coloumns here
+  {\material & \Z & \symbol & \rho & \k & \cp \\ \hline} % specify your coloumns here
 \end{longtable}
