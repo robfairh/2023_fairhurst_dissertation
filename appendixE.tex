@@ -20,8 +20,10 @@
 
 \begin{longtable}{lccccc}%
   \caption{Materials included in the ATR experiment model.} \\ \hline
-  \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] % specify table head
-  \\ \hline
+  \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] \\ \hline
+  \endfirsthead
+  \caption{Continued. Materials included in the ATR experiment model.} \\ \hline
+  \bfseries Material & \bfseries Z & \bfseries Symbol & \bfseries $\rho$ [kg/m$^3$] & \bfseries k [W/m/K] & \bfseries $c_p$ [J/kg/K] \\ \hline
   \endhead
   \csvreader[head to column names]{thermalpropertiesv3b.csv}{} % use head of csv as column names
   {\material & \Z & \symbol & \rho & \k & \cp \\ \hline} % specify your coloumns here

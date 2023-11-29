@@ -27,7 +27,8 @@
 \usepackage{graphicx}
 \usepackage{relsize}
 \usepackage{listings}
-\usepackage{caption}
+% \usepackage{caption}
+\usepackage[justification=centering]{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -35,6 +36,9 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{csvsimple}
 \usepackage{longtable}
+
+% only assigns full page to float when it is more than 90% of the page
+\renewcommand{\floatpagefraction}{0.9}
 
 % \usepackage[printwatermark]{xwatermark}
 % \usepackage{xcolor}

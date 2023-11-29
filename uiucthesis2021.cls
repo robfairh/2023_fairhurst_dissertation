@@ -67,7 +67,7 @@
 \def\college#1{\def\@college{#1}}
 \def\degreeyear#1{\def\@degreeyear{#1}}
 \newcommand{\committee}[1]{\gdef\@committee{#1}}
-\def\copyrightnotice{\copyright~\@degreeyear~ \@author}
+\def\copyrightnotice{Copyright ~\@degreeyear~ \@author}
 \newif\if@thesiscrpage \@thesiscrpagetrue
 \let\nocopyrightpage\@thesiscrpagefalse
 % \phdthesis
@@ -136,7 +136,7 @@
             with a minor in \@minor\\
         \fi
         in the \@college\ of the\\
-        University of Illinois at Urbana-Champaign, \@degreeyear\vfil}%
+        University of Illinois Urbana-Champaign, \@degreeyear\vfil}%
     \vskip -1.5ex%
     \vbox to 0.4in{%
     Urbana, Illinois}%

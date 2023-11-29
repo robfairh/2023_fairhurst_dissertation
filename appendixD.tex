@@ -17,10 +17,21 @@
 %   {\\ \hline \Z & \symbol & \M & \rho & \A & \ai} % specify your coloumns here
 % \end{longtable}
 
+% \begin{longtable}{cccccc}%
+%   \caption{Materials included in the ATR experiment model.} \\ \hline
+%   \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
+%   \\ \hline
+%   \endhead
+%   \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
+%   {\Z & \symbol & \M & \rho & \A & \ai \\ \hline} % specify your coloumns here
+% \end{longtable}
+
 \begin{longtable}{cccccc}%
   \caption{Materials included in the ATR experiment model.} \\ \hline
-  \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$  % specify table head
-  \\ \hline
+  \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$ \\ \hline
+  \endfirsthead
+  \caption{Continued. Materials included in the ATR experiment model.} \\ \hline
+  \bfseries Z & \bfseries Symbol & \bfseries M [g/mol] & \bfseries $\rho$ [g/cm$^3$] & \bfseries A & \bfseries $a_i$ \\ \hline
   \endhead
   \csvreader[head to column names]{materialsc.csv}{} % use head of csv as column names
   {\Z & \symbol & \M & \rho & \A & \ai \\ \hline} % specify your coloumns here
