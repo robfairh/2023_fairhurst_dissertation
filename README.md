@@ -1,22 +1,6 @@
-# My Reviews
-
-* Present vs Past tense
-* gamma vs photon
-  * use gamma everywhere but in the bremstrahlung discussion
-
-
-* irradiation database: generic material irradiation database
-
-
-## Madicken
-
-* How are you calculating the heat-transfer related material properties of the sample? I didn't see an equation (but perhaps I missed it). I understand how mixed material densities can be calculated based on mass-weighted sums. I also understand how that's possible for activation (for non-thick materials). But is that possible to do for heat transfer properties?? I know that strength properties are extremely dependent on the crystal structure and phase of a material -- so steels can have vastly different strength properties depending on their phase even if their alloys are different ratios of the same elements. I think the mass-weighting probably wouldn't work, then, for those properties. But are heat transfer properties like melting point, thermal conductivity, and heat capacity validly calculated this way?
-
-The inputs are the experiment thermal properties and the coefficients defining the delayed heating in the experiment.
-While the experiment thermal properties are supplied by the user, the delayed heating coefficients are calculated based on the experiment material composition.
-
-
 # README by me
+
+Final version: `2023-11-28_Fairhurst-Roberto_Thesis.pdf` which should match the pdf version produced if running `make`.
 
 Template downloaded from: https://grad.illinois.edu/thesis/format
 
